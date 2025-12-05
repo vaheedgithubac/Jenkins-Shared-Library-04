@@ -14,7 +14,9 @@ class BuildDockerImage implements Serializable {
         	script: "docker build . -t ${dockerImage}",
         	returnStatus: true
     	)
-
+		
+        # def output = script.sh(script: "docker build . -t ${dockerImage}", returnStdout: true).trim()
+		
     	if (status == 0) {
         	script.echo "✔ Docker image '${dockerImage}' built successfully."
         	return dockerImage
