@@ -1,0 +1,236 @@
+def call(Map config = [:]) {
+	pipeline {
+		agent any 
+
+		options { 
+        	//skipDefaultCheckout true 
+        	disableConcurrentBuilds()
+        	timeout(time: 30, unit: 'MINUTES')
+        	timestamps() 
+        	ansiColor('xterm')                 // plugin: "AnsiColor"
+        }
+
+       environment {
+			DOCKER_IMAGE = ''   
+		    NEXUS_ARTIFACT_VERSION = "${BUILD_ID}-${BUILD_TIMESTAMP}"  // Requires Build Timestamp plugin
+	   }
+
+	   stages {
+	   		// stage('Init') { steps {cleanWs() } }
+	   		stage("SET AND PRINT LATEST COMMIT ID") {
+	   			steps {
+					script {
+	   					//env.MY_GIT_LATEST_COMMIT_ID = getLatestCommitIdShort() ( To get this work, you should not declare a variable under pipeline environment{} block )
+						// MY_GIT_LATEST_COMMIT_ID = getLatestCommitIdShort()
+						
+						env.MY_GIT_LATEST_COMMIT_ID = env.GIT_COMMIT.take(7)
+	   					echo "MY_GIT_LATEST_COMMIT_ID: ${env.MY_GIT_LATEST_COMMIT_ID}"	
+					}
+	   			}
+	   		}
+
+	   		stage("JACOCO CODE COVERAGE") {
+	   			steps {
+	   				script {
+	   					if (config.EXECUTE_JACOCO_STAGE.toLowerCase()?.trim() == "yes") {
+	   						echo "Running JACOCO CODE COVERAGE"
+	   						def jacoco_params = [
+            					JACOCO_GROUPID:     config.JACOCO_GROUPID,
+            					JACOCO_ARTIFACT_ID: config.JACOCO_ARTIFACT_ID,
+            					JACOCO_VERSION:     config.JACOCO_VERSION,
+            					JACOCO_GOAL:        config.JACOCO_GOAL
+        					]
+        					jacocoCodeCoverage(jacoco_params)
+        			   	} else { echo "Skipping...STAGE - JACOCO CODE COVERAGE" }
+	   				}
+	   			}
+	   		 }
+           
+		   stage("TRIVY FILE SYSTEM SCAN") {
+			   steps {
+				   script { 
+				   		if (config.EXECUTE_TRIVY_FS_STAGE.toLowerCase()?.trim() == "yes") {
+				   			echo "Running... TRIVY FILE SYSTEM SCAN"
+					   		trivyScan([
+					   			MODE:                    "fs",
+					   			TARGET:                  config.TRIVY_FS_TARGET,
+								SCAN_FORMAT:             config.TRIVY_FS_SCAN_FORMAT,
+								OUTPUT_FORMAT:           config.TRIVY_FS_OUTPUT_FORMAT,
+					   			PROJECT_NAME:            config.PROJECT_NAME,
+					   			COMPONENT:               config.COMPONENT,
+					   			MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID	
+					   		])
+					   	} else { echo "Skipping...STAGE - TRIVY FILE SYSTEM SCAN" }
+			       	}
+	           	}
+		   	}
+
+		   stage("SONARQUBE SCAN - SAST") {
+		   		steps {
+		   			script {
+		   				if (config.EXECUTE_SONARSCAN_STAGE.toLowerCase()?.trim() == "yes") {
+				   			echo "Running... SONARQUBE SCAN - SAST"
+					   		sonarqubeScan([
+					   			SONARQUBEAPI: config.SONARQUBEAPI,
+					   			SCANNER_HOME: config.SCANNER_HOME,  
+					   			PROJECT_NAME: config.PROJECT_NAME,
+					   			PROJECT_KEY:  config.PROJECT_KEY
+					   		])
+					   	} else { echo "Skipping...STAGE - SONARQUBE SCAN - SAST" }
+		   			}
+		   		}
+		    }
+
+		   stage("SONARQUBE QUALITY GATE") {
+		   		steps {
+		   			script {
+		   				if (config.EXECUTE_SONAR_QG_STAGE.toLowerCase()?.trim() == "yes") {
+				   			echo "Running... SONARQUBE QUALITY GATE"
+					   		sonarqubeQG([TIMEOUT_MINUTES: config.TIMEOUT_MINUTES])
+					   	} else { echo "Skipping...STAGE - SONARQUBE QUALITY GATE" }
+
+		   			}
+		   		}
+		    }
+
+		   stage("MAVEN BUILD") {
+		   		steps {
+		   			script {
+		   				if (config.EXECUTE_MAVEN_STAGE.toLowerCase()?.trim() == "yes") {
+		   					echo "Running... MAVEN BUILD"
+		   					mavenBuild([MAVEN_SKIP_TESTS: config.MAVEN_SKIP_TESTS])
+		   				} else { echo "Skipping...STAGE - MAVEN BUILD" }
+		   			}
+		   		}
+		    }
+
+		   stage("BUILD DOCKER IMAGE") {
+		   		steps {
+		   			script {
+		   				if (config.EXECUTE_DOCKER_IMAGE_BUILD_STAGE.toLowerCase()?.trim() == "yes") {
+		   					echo "Running...BUILD DOCKER IMAGE"
+		   					DOCKER_IMAGE = dockerImageBuild([
+		   						PROJECT_NAME: 			 config.PROJECT_NAME,
+		   						COMPONENT: 				 config.COMPONENT,
+		   						MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID
+		   					])
+		   					echo "IMAGE BUILT SUCCESSFULLY: ${DOCKER_IMAGE}"
+		   				} else { echo "Skipping... STAGE - BUILD DOCKER IMAGE" }
+		   			}
+		   		}
+		    }
+
+		   stage("DOCKER IMAGE SCAN - TRIVY") {
+		   		steps {
+		   			script {
+		   				if (config.EXECUTE_TRIVY_IMAGE_STAGE.toLowerCase()?.trim() == "yes") {
+		   					echo ("Running...DOCKER IMAGE SCAN - TRIVY")
+		   					trivyScan([
+					   			MODE:                    "image",
+					   			TARGET:                  DOCKER_IMAGE,
+								SCAN_FORMAT:             config.TRIVY_IMAGE_SCAN_FORMAT,
+								OUTPUT_FORMAT:           config.TRIVY_IMAGE_OUTPUT_FORMAT,
+					   			PROJECT_NAME:            config.PROJECT_NAME,
+					   			COMPONENT:               config.COMPONENT,
+					   			MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID
+					   		])
+					    } else { echo "Skipping... STAGE - DOCKER IMAGE SCAN - TRIVY" }
+		   			}
+		   		}
+		    }
+
+		   stage("NEXUS ARTIFACT UPLOAD") {
+		   		steps {
+		   			script {
+		   				if (config.EXECUTE_NEXUS_STAGE.toLowerCase()?.trim() == "yes") {
+		   					if (configMap.NEXUS_CREDENTIALS_ID?.trim()) {
+    							echo "Nexus credentials ID is provided: ${config.NEXUS_CREDENTIALS_ID}"
+		   						withCredentials([usernamePassword(
+                            		credentialsId: config.NEXUS_CREDENTIALS_ID, 
+                            		usernameVariable: 'TMP_NEXUS_USER', 
+                            		passwordVariable: 'TMP_NEXUS_PASSWORD'
+                            	)]) {
+                            			//Assign to ENV variables
+                            			env.NEXUS_USER = TMP_NEXUS_USER
+                            			env.NEXUS_PASSWORD = TMP_NEXUS_PASSWORD
+                               		}
+                            }
+                            // echo " NEXUS_USER: ${nexus_user} NEXUS_PASSWORD: ${nexus_password}"
+                            echo "Running...NEXUS ARTIFACT UPLOAD"
+		   					nexusUpload([
+					            NEXUS_VERSION:          config.NEXUS_VERSION,
+					            NEXUS_PROTOCOL:         config.NEXUS_PROTOCOL,
+					            NEXUS_HOST:             config.NEXUS_HOST,
+					            NEXUS_PORT:             config.NEXUS_PORT,
+					            NEXUS_GRP_ID:           config.NEXUS_GRP_ID,
+					            NEXUS_ARTIFACT_VERSION: "${env.MY_GIT_LATEST_COMMIT_ID}-${NEXUS_ARTIFACT_VERSION}",
+					            NEXUS_CREDENTIALS_ID:   config.NEXUS_CREDENTIALS_ID,
+								NEXUS_BASE_REPO:        config.NEXUS_BASE_REPO
+          					])
+		   				}  else { echo "Skipping... STAGE - NEXUS ARTIFACT UPLOAD"}	
+		   			}
+		   		}
+		    }
+
+		   stage("DOCKER IMAGE UPLOAD - DOCKER HUB") {
+		   		steps {
+		   			script {
+                        if (config.EXECUTE_DOCKER_HUB_PUSH_STAGE.toLowerCase()?.trim() == "yes") {
+		   					echo "Running...DOCKER IMAGE UPLOAD - DOCKER HUB"
+		   					dockerPush([
+		   						DOCKER_IMAGE:              DOCKER_IMAGE,
+		   						DOCKER_REPO_URI:           config.DOCKER_REPO_URI,
+		   						DOCKER_HUB_CREDENTIALS_ID: config.DOCKER_HUB_CREDENTIALS_ID
+		   					])
+		   				} else { echo "Skipping... STAGE - DOCKER IMAGE UPLOAD - DOCKER HUB" }
+		   			}
+		   		}
+		    }
+
+		   stage("DOCKER IMAGE UPLOAD - ECR") {
+		   		steps {
+		   			script {
+		   				if (config.EXECUTE_ECR_PUSH_STAGE.toLowerCase()?.trim() == "yes") {
+		   					echo "Running...DOCKER IMAGE UPLOAD - ECR"
+		   					ecrPush([
+		   						DOCKER_IMAGE:       DOCKER_IMAGE,
+		   						ECR_REPO_URI:       config.ECR_REPO_URI,
+		   						AWS_CREDENTIALS_ID: config.AWS_CREDENTIALS_ID
+		   					])
+		   				} else { echo "Skipping... STAGE - DOCKER IMAGE UPLOAD - ECR" }
+		   			}
+		   		}
+		    }
+
+
+		   
+	   } // stages
+
+	   post {
+	   		always {
+	   			script {
+	   				if (config.EXECUTE_EMAIL_STAGE.toLowerCase()?.trim() == "yes") {
+	   					echo "Sending Email"
+	   					sendEmail([
+			                 JOB_NAME:        env.JOB_NAME,
+			                 BUILD_NUMBER:    env.BUILD_NUMBER,
+			                 BUILD_URL:       env.BUILD_URL,
+			                 BRANCH_NAME:     env.BRANCH_NAME,
+			                 PIPELINE_STATUS: currentBuild.currentResult,
+			                 DURATION:        currentBuild.durationString,
+			                 FROM_MAIL:       config.FROM_MAIL,
+			                 TO_MAIL:         config.TO_MAIL,
+			                 REPLY_TO_MAIL:   config.REPLY_TO_MAIL,
+			                 CC_MAIL:         config.CC_MAIL,
+			                 BCC_MAIL:        config.BCC_MAIL,
+			                 ATTACHMENTS:     config.ATTACHMENTS                      // "trivy-reports/*, owasp-reports/*"
+			            ])               
+	   				} else { echo "Skipping... POST - STAGE - Sending Mail" }
+	   			}
+	   		}
+	   }
+
+
+    } // pipeline
+
+} // def
