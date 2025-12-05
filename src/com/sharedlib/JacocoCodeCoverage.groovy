@@ -19,10 +19,10 @@ class JacocoCodeCoverage implements Serializable {
 
     	script.echo "⏳ Running Jacoco step: ${jacocoCmd}..."
 
-    	try { sh """ 
-                 mvn ${jacocoCmd}
-                 mvn clean test jacoco:report
-             """ 
+    	try { script.sh """ 
+                 	mvn ${jacocoCmd}
+                 	mvn clean test jacoco:report
+              		""" 
         } catch (Exception ex) { error "❌ Jacoco Maven step failed: ${ex.message}" }
 
     	echo "✔ JACOCO CODE COVERAGE completed Successfully"
