@@ -20,7 +20,7 @@ class DockerPush implements Serializable {
     	def dockerRepoUri = config.DOCKER_REPO_URI ?: "docker.io"   // optional, default to Docker Hub
 
     	// Use withCredentials to inject Docker credentials securely
-	    script.withCredentials([usernamePassword(
+	    script.withCredentials([script.usernamePassword(
 	        credentialsId: credentialsId,
 	        usernameVariable: 'DOCKER_USER',
 	        passwordVariable: 'DOCKER_PASS'
