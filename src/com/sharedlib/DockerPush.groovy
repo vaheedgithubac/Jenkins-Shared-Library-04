@@ -11,7 +11,7 @@ class DockerPush implements Serializable {
 		def required = ["DOCKER_IMAGE", "DOCKER_HUB_CREDENTIALS_ID", "DOCKER_REPO_URI"]
     	required.each { key ->
         	if (!config[key]) {
-            	error "❌ DOCKER REGISTRY: Missing required parameter '${key}'"
+            	script.error "❌ DOCKER REGISTRY: Missing required parameter '${key}'"
         	}
     	}
 
@@ -20,20 +20,20 @@ class DockerPush implements Serializable {
     	def dockerRepoUri = config.DOCKER_REPO_URI ?: "docker.io"   // optional, default to Docker Hub
 
     	// Use withCredentials to inject Docker credentials securely
-	    withCredentials([usernamePassword(
+	    script.withCredentials([usernamePassword(
 	        credentialsId: credentialsId,
 	        usernameVariable: 'DOCKER_USER',
 	        passwordVariable: 'DOCKER_PASS'
 	    )]) {
 
 	        // Tag the Docker image
-	        sh """
+	        script.sh """
 	            echo "🔖 Tagging Docker Image"
 	            docker tag ${dockerImage} ${DOCKER_USER}/${dockerImage}
 	        """
 
 	        // Login to Docker Hub
-	        sh """
+	        script.sh """
 	            set +x
 	            echo "🔐 Logging into Docker Hub as '${DOCKER_USER}'"
 	            echo "\${DOCKER_PASS}" | docker login -u "\${DOCKER_USER}" --password-stdin
@@ -42,14 +42,14 @@ class DockerPush implements Serializable {
 	        """
 
 	        // Push the image
-	        sh """
+	        script.sh """
 	            echo "🚀 Pushing Docker Image to Docker Hub"
 	            docker push ${DOCKER_USER}/${dockerImage}
 	            echo "✔ Pushed Docker Image Successfully"
 	        """
 
 	        // Logout from Docker Hub
-	        sh """
+	        script.sh """
 	            docker logout
 	            echo "✔ Logged out from Docker Hub Successfully"
 	        """
