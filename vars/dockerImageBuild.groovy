@@ -14,6 +14,5 @@ def call(Map config = [:]) {
   def imageTag      = config.MY_GIT_LATEST_COMMIT_ID
 
   def dockerImage   = "${projectName}-${component}:${imageTag}"
-  def call(String dockerImage) { return new DockerImageBuild(this).buildDockerImage(dockerImage) }
+  return new DockerImageBuild(this).buildDockerImage(dockerImage)
 }
-
