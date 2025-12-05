@@ -1,12 +1,12 @@
 #!/usr/bin/env groovy
 package com.sharedlib
 
-class BuildDockerImage implements Serializable {
+class DockerImageBuild implements Serializable {
 	def script
 
-	BuildDockerImage(script) { this.script = script }
+	DockerImageBuild(script) { this.script = script }
 
-	def buildDockerImage(String dockerImage) {
+	def dockerImageBuild(String dockerImage) {
 
     	script.echo "🔨 Building Docker Image: ${dockerImage}"
 
@@ -22,7 +22,7 @@ class BuildDockerImage implements Serializable {
         	return dockerImage
     	} else {
         	script.echo "❌ Docker build failed for image: ${dockerImage}"
-        	script.error("Stopping build because Docker image failed.")
+        	script.error("Stopping build because building Docker image failed.")
        	}
 	}
 }
