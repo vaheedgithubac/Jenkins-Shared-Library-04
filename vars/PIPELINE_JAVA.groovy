@@ -33,7 +33,7 @@ def call(Map config = [:]) {
 	   		stage("JACOCO CODE COVERAGE") {
 	   			steps {
 	   				script {
-	   					if (config.EXECUTE_JACOCO_STAGE.toLowerCase()?.trim() == "yes") {
+	   					if (config.EXECUTE_JACOCO_STAGE.equalsIgnoreCase("yes")) {
 	   						echo "Running JACOCO CODE COVERAGE"
 	   						def jacoco_params = [
             					JACOCO_GROUPID:     config.JACOCO_GROUPID,
