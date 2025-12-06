@@ -23,10 +23,7 @@ def call(Map config = [:]) {
 	   					//env.MY_GIT_LATEST_COMMIT_ID = getLatestCommitIdShort() ( To get this work, you should not declare a variable under pipeline environment{} block )
 						// MY_GIT_LATEST_COMMIT_ID = getLatestCommitIdShort()
 						if (config.EXECUTE_GITCHECKOUT_STAGE.equalsIgnoreCase('yes') {
-							env.MY_GIT_LATEST_COMMIT_ID = gitCheckout([
-															MY_GIT_URL:       config.MY_GIT_URL,
-															MY_GIT_REPO_TYPE: config.MY_GIT_REPO_TYPE
-															])
+							env.MY_GIT_LATEST_COMMIT_ID = gitCheckout([MY_GIT_URL: config.MY_GIT_URL, MY_GIT_REPO_TYPE: config.MY_GIT_REPO_TYPE])
 	   						echo "MY_GIT_LATEST_COMMIT_ID: ${env.MY_GIT_LATEST_COMMIT_ID}"
 						}
 					}
