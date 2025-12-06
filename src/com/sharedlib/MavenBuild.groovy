@@ -10,7 +10,7 @@ class MavenBuild implements Serializable {
 
         def required = ["MAVEN_SKIP_TESTS"]
         required.each { key ->
-            if (!config[key] || config[key].toString().trim() == "") {
+            if (!config[key] || config[key]?.toString().trim() == "") {
                 script.error "❌ MAVEN BUILD: Missing required parameter '${key}'"
             }
         }
@@ -22,7 +22,7 @@ class MavenBuild implements Serializable {
         def mavenGoals = config.MAVEN_GOALS ?: "clean package"
          
         /*
-        def maven_skip_tests = ((config.MAVEN_SKIP_TESTS in [true, 'true', "true"]) ? 'true' : 'false') ?: 'true'
+        def maven_skip_tests = ((config.MAVEN_SKIP_TESTS in [true, 'true', "true"]) ? 'true' : 'false') 
         def maven_goals = config.maven_goals ?: "clean package"
         */
 
