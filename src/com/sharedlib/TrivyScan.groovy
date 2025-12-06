@@ -2,37 +2,47 @@
 package com.sharedlib
 
 class TrivyScan implements Serializable {
-	def script
+    def script
 
-	TrivyScan(script) { this.script = script }
+    TrivyScan(script) { 
+        this.script = script 
+    }
 
-	def trivyScan(Map config = [:]) {
+    def trivyScan(Map config = [:]) {
 
-		def required = ["MODE", "TARGET", "SCAN_FORMAT", "OUTPUT_REPORT", "SEVERITY"]
-    	required.each { key ->
-        	if (!config[key] || config[key].trim() == "") {
-            	error "❌ TRIVY: Missing required parameter '${key}'"
-        	}
-    	}
+        def required = [
+            "MODE",
+            "TARGET",
+            "SCAN_FORMAT",
+            "OUTPUT_REPORT",
+            "SEVERITY"
+        ]
 
-    	def mode          = config.MODE
-    	def target        = config.TARGET
-    	def scan_format   = config.SCAN_FORMAT
-    	def output_report = config.OUTPUT_REPORT
-    	def severity      = config.SEVERITY
+        required.each { key ->
+            if (!config[key] || config[key].toString().trim() == "") {
+                script.error "❌ TRIVY ${config.MODE?.toUpperCase()?.trim()} SCAN: Missing required parameter '${key}'"
+            }
+        }
 
-    	script.echo "⏳ Running TRIVY ${mode} SCAN for : '${target}'"
+        def mode         = config.MODE
+        def target       = config.TARGET
+        def scanFormat   = config.SCAN_FORMAT
+        def outputReport = config.OUTPUT_REPORT
+        def severity     = config.SEVERITY
 
-    	try { script.sh """
-            		trivy ${mode} ${target} \
-            		--format ${scan_format} \
-            		--output ${output_report} \
-            		--severity ${severity}  
-    			"""
-        } catch (Exception ex) { error "❌ Jacoco Maven step failed: ${ex.message}" }
+        script.echo "⏳ Running TRIVY ${mode} SCAN for: '${target}'"
 
-    	echo "✔ Trivy scan completed successfully. Report stored at: '${env.WORKSPACE}/${output_report}'"
+        try {
+            script.sh """
+                trivy ${mode} '${target}' \
+                --format '${scanFormat}' \
+                --output '${outputReport}' \
+                --severity '${severity}'
+            """
+        } catch (Exception ex) {
+            script.error "❌ Trivy ${mode} scan step failed: ${ex.message}"
+        }
 
-    	// sh 'mvn org.jacoco:jacoco-maven-plugin:0.8.7:prepare-agent'
-	}
+        script.echo "✔ Trivy ${mode} scan completed successfully. Report stored at: '${script.env.WORKSPACE}/${outputReport}'"
+    }
 }
