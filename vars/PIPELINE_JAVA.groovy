@@ -198,7 +198,8 @@ def call(Map config = [:]) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - ECR"
 		   					ecrPush([
 		   						DOCKER_IMAGE:       DOCKER_IMAGE,
-		   						ECR_REPO_URI:       config.ECR_REPO_URI,
+		   						ECR_REGISTRY_URI:   config.ECR_REGISTRY_URI,
+								REGION:             config.REGION,
 		   						AWS_CREDENTIALS_ID: config.AWS_CREDENTIALS_ID
 		   					])
 		   				} else { echo "Skipping... STAGE - DOCKER IMAGE UPLOAD - ECR" }
