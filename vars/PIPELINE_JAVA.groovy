@@ -75,8 +75,8 @@ def call(Map config = [:]) {
 		   				if (config.EXECUTE_SONARSCAN_STAGE.toLowerCase()?.trim() == "yes") {
 				   			echo "Running... SONARQUBE SCAN - SAST"
 					   		sonarqubeScan([
-					   			SONARQUBEAPI: config.SONARQUBEAPI,
-					   			SCANNER_HOME: config.SCANNER_HOME,  
+					   			SONARQUBE_SERVER: config.SONARQUBE_SERVER,
+					   			SONAR_SCANNER_NAME: config.SONAR_SCANNER_NAME,  
 					   			PROJECT_NAME: config.PROJECT_NAME,
 					   			PROJECT_KEY:  config.PROJECT_KEY
 					   		])
