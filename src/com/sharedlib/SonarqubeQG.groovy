@@ -4,9 +4,7 @@ package com.sharedlib
 class SonarqubeQG implements Serializable {
     def script
 
-    SonarqubeQG(script) { 
-        this.script = script 
-    }
+    SonarqubeQG(script) { this.script = script }
 
     def sonarqubeQG(Map config = [:]) {
         // Default timeout in minutes
