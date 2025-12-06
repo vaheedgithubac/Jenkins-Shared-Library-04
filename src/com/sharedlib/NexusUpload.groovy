@@ -8,7 +8,9 @@ class NexusUpload implements Serializable {
 
     def nexusUpload(Map config = [:]) {
 
+        //----------------------------------------------------
         // Validate required parameters
+        //----------------------------------------------------
         def required = [
             "NEXUS_VERSION", 
             "NEXUS_PROTOCOL", 
@@ -21,10 +23,13 @@ class NexusUpload implements Serializable {
         ]
         required.each { key ->
             if (!config[key] || config[key].toString().trim() == "") {
-                script.error "❌ SONARQUBE: Missing required parameter '${key}'"
+                script.error "❌ NEXUS: Missing required parameter '${key}'"
             }
         }
 
+        //----------------------------------------------------
+        // Assign Parameters to local variables
+        //----------------------------------------------------
         def nexus_version          = config.NEXUS_VERSION
         def nexus_protocol         = config.NEXUS_PROTOCOL
         def nexus_host             = config.NEXUS_HOST
@@ -34,8 +39,10 @@ class NexusUpload implements Serializable {
         def nexus_credentials_id   = config.NEXUS_CREDENTIALS_ID
         def nexus_base_repo        = config.NEXUS_BASE_REPO
            
-        //  Read pom.xml
-        def pom = readMavenPom file: "pom.xml"
+        //----------------------------------------------------
+        // Read pom.xml
+        //----------------------------------------------------
+        def pom = script.readMavenPom file: "pom.xml"
 
         def pom_artifactId  = pom.getArtifactId()                   // pom.artifactId
         def pom_version     = pom.getVersion()                      // pom.version
@@ -43,26 +50,36 @@ class NexusUpload implements Serializable {
         def pom_groupId     = pom.getGroupId()                      // pom.groupId
         def pom_packaging   = pom.getPackaging()                    // pom.packaging
 
-        def filesByGlob = findFiles(glob: "target/*.${pom_packaging}")
+
+        //----------------------------------------------------
+        // Find artifacts
+        //----------------------------------------------------
+        def filesByGlob = script.findFiles(glob: "target/*.${pom_packaging}")
 
         if (!filesByGlob || filesByGlob.size() == 0) {
-            error "❌ No artifact found in /target directory with extension *.${pom_packaging}"
+            script.error "❌ No artifact found in /target directory with extension *.${pom_packaging}"
         }
 
-        echo "File Path: ${filesByGlob[0].path}"
-        echo "File Name: ${filesByGlob[0].name}"
-        echo "Is Directory: ${filesByGlob[0].directory}"
-        echo "File Length: ${filesByGlob[0].length}"
-        echo "File Last Modified: ${filesByGlob[0].lastModified}"
-
         def artifactPath = filesByGlob[0].path;
-        def artifactExists = fileExists(artifactPath)
+        def artifactExists = script.fileExists(artifactPath)
         def final_nexus_repo = pom_version.endsWith("SNAPSHOT") ? "${nexus_base_repo}-SNAPSHOT" : "${nexus_base_repo}-RELEASE"
 
-        echo "📤 Uploading to Nexus repository: ${final_nexus_repo}"
+        script.echo """
+        📄 Artifact Details:
+            Path         : ${artifactPath}
+            Name         : ${filesByGlob[0].name}
+            Is Directory : ${filesByGlob[0].directory}
+            Length       : ${filesByGlob[0].length}
+            Modified     : ${filesByGlob[0].lastModified}
+        📤 Uploading to Nexus repository: ${final_nexus_repo}
+        """
 
-        if(artifactExists) {
-            nexusArtifactUploader(
+        //----------------------------------------------------
+        // Upload artifact
+        //----------------------------------------------------
+
+        if (artifactExists) {
+            script.nexusArtifactUploader(
                 nexusVersion: nexus_version,
                 protocol: nexus_protocol,
                 nexusUrl: "${nexus_host}:${nexus_port}",
@@ -78,8 +95,8 @@ class NexusUpload implements Serializable {
                     type: pom_packaging]
                 ]
             )
-            echo "✔ Nexus upload successfully completed"
+            script.echo "✔ Nexus upload successfully completed"
         } 
-        else { error "❌*** File: ${artifactPath}, could not be found" }
+        else { script.error "❌ File: ${artifactPath}, could not be found" }
     }
 }
