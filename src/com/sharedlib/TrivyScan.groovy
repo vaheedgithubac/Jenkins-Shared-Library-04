@@ -4,9 +4,7 @@ package com.sharedlib
 class TrivyScan implements Serializable {
     def script
 
-    TrivyScan(script) { 
-        this.script = script 
-    }
+    TrivyScan(script) { this.script = script }
 
     def trivyScan(Map config = [:]) {
 
@@ -19,7 +17,7 @@ class TrivyScan implements Serializable {
         ]
 
         required.each { key ->
-            if (!config[key] || config[key].toString().trim() == "") {
+            if (!config[key] || config[key]?.toString().trim() == "") {
                 script.error "❌ TRIVY ${config.MODE?.toUpperCase()?.trim()} SCAN: Missing required parameter '${key}'"
             }
         }
@@ -39,10 +37,8 @@ class TrivyScan implements Serializable {
                 --output "${outputReport}" \
                 --severity "${severity}"
             """
-        } catch (Exception ex) {
-            script.error "❌ Trivy "${mode}" scan step failed: ${ex.message}"
-        }
-
+        } catch (Exception ex) { script.error "❌ Trivy "${mode}" scan step failed: ${ex.message}" }
+        
         script.echo "✔ Trivy ${mode} scan completed successfully. Report stored at: '${script.env.WORKSPACE}/${outputReport}'"
     }
 }
