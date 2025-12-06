@@ -6,7 +6,7 @@ class DockerImageBuild implements Serializable {
 
 	DockerImageBuild(script) { this.script = script }
 
-	def dockerImageBuild(String dockerImage) {
+	def dockerImageBuild(Map config = [:]) {
 
 		def required = ["PROJECT_NAME", "COMPONENT", "MY_GIT_LATEST_COMMIT_ID"]
 	    required.each { key ->
