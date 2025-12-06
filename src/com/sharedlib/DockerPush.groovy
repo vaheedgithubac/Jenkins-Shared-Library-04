@@ -8,16 +8,16 @@ class DockerPush implements Serializable {
 
 	def dockerPush(Map config = [:]) {
 
-		def required = ["DOCKER_IMAGE", "DOCKER_HUB_CREDENTIALS_ID", "DOCKER_REPO_URI"]
-    	required.each { key ->
-        	if (!config[key]) {
-            	script.error "❌ DOCKER REGISTRY: Missing required parameter '${key}'"
-        	}
-    	}
+		def required = ["DOCKER_IMAGE", "DOCKER_HUB_CREDENTIALS_ID", "DOCKER_REGISTRY_URI"]
+	    required.each { key ->
+	        if (!config[key] || config[key].trim() == "") {
+	            error "❌ DOCKER REGISTRY: Missing required parameter '${key}'"
+	        }
+	    }
 
-    	def dockerImage   = config.DOCKER_IMAGE
-    	def credentialsId = config.DOCKER_HUB_CREDENTIALS_ID
-    	def dockerRepoUri = config.DOCKER_REPO_URI ?: "docker.io"   // optional, default to Docker Hub
+    	def dockerImage       = config.DOCKER_IMAGE
+    	def credentialsId     = config.DOCKER_HUB_CREDENTIALS_ID
+    	def dockerRegistryUri = config.DOCKER_REGISTRY_URI ?: "docker.io"   // optional, default to Docker Hub
 
     	// Use withCredentials to inject Docker credentials securely
 	    script.withCredentials([script.usernamePassword(
@@ -40,6 +40,14 @@ class DockerPush implements Serializable {
 	            # echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin 
 	            set -x
 	        """
+            /*
+	        script.sh '''
+	            set +x
+	            echo "🔐 Logging into Docker Hub as '${DOCKER_USER}'"
+	            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+	            set -x
+	        '''
+	        */
 
 	        // Push the image
 	        script.sh """
