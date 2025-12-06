@@ -34,13 +34,13 @@ class TrivyScan implements Serializable {
 
         try {
             script.sh """
-                trivy ${mode} '${target}' \
-                --format '${scanFormat}' \
-                --output '${outputReport}' \
-                --severity '${severity}'
+                trivy "${mode}" "${target}" \
+                --format "${scanFormat}" \
+                --output "${outputReport}" \
+                --severity "${severity}"
             """
         } catch (Exception ex) {
-            script.error "❌ Trivy ${mode} scan step failed: ${ex.message}"
+            script.error "❌ Trivy "${mode}" scan step failed: ${ex.message}"
         }
 
         script.echo "✔ Trivy ${mode} scan completed successfully. Report stored at: '${script.env.WORKSPACE}/${outputReport}'"
