@@ -17,7 +17,7 @@ def call(Map config = [:]) {
     ]
 
     required.each { key ->
-        if (!config[key] || config[key].toString().trim() == "") {
+        if (!config[key] || config[key]?.toString().trim() == "") {
             error "❌ TRIVY ${config.MODE?.toUpperCase()?.trim()} SCAN: Missing required parameter '${key}'"
         }
     }
@@ -28,7 +28,7 @@ def call(Map config = [:]) {
     def mode              = config.MODE.toLowerCase()
     def target            = config.TARGET
     def scanFormat        = config.SCAN_FORMAT
-    def outputFormat      = config.OUTPUT_FORMAT   // currently unused
+    def outputFormat      = config.OUTPUT_FORMAT
     def severity          = config.SEVERITY ?: "HIGH,MEDIUM,LOW"
     def projectName       = config.PROJECT_NAME
     def component         = config.COMPONENT
@@ -55,10 +55,10 @@ def call(Map config = [:]) {
     //----------------------------------------------------
     // Output file path
     //----------------------------------------------------
-    def outputDir    = "trivy-reports"
+    def outputDir = "trivy-reports"
     sh "mkdir -p ${outputDir}"
 
-    def outputReport = "${outputDir}/${projectName}-${component}-${mode}-${gitLatestCommitId}.${ext}"
+    def outputReport = "${outputDir}/${projectName}-${component}-${mode}-${gitLatestCommitId}.${outputFormat}"
 
     echo "🛡 Running Trivy scan"
     echo "📄 Output file : '${outputReport}'"
