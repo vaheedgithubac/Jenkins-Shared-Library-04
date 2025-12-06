@@ -1,40 +1,36 @@
 #!/usr/bin/env groovy
 package com.sharedlib
 
-class DockerImageBuild implements Serializable {
+class JacocoCodeCoverage implements Serializable {
 	def script
 
-	DockerImageBuild(script) { this.script = script }
+	JacocoCodeCoverage(script) { this.script = script }
 
-	def dockerImageBuild(String dockerImage) {
+	def jacocoCodeCoverage(Map config = [:]) {
 
-		def required = ["PROJECT_NAME", "COMPONENT", "MY_GIT_LATEST_COMMIT_ID"]
+		def required = ["JACOCO_GROUPID", "JACOCO_ARTIFACT_ID", "JACOCO_VERSION", "JACOCO_GOAL"]
 	    required.each { key ->
-	        if (!config[key] || config[key].trim() == "") {
-	           error "❌ DOCKER IMAGE BUILD: Missing required parameter '${key}'"
+	        if (!config[key] || config[key]?.toString().trim() == "") {
+	           script.error "❌ JACOCO CODE COVERAGE: Missing required parameter '${key}'"
 	        }
 	    }
 
-	    def projectName   = config.PROJECT_NAME
-		def component     = config.COMPONENT
-		def imageTag      = config.MY_GIT_LATEST_COMMIT_ID
-		def dockerImage   = "${projectName}-${component}:${imageTag}"
+	    def jacocoGroupId    = config.JACOCO_GROUPID
+		def jacocoArtifactId = config.JACOCO_ARTIFACT_ID
+		def jacocoVersion    = config.JACOCO_VERSION
+		def jacocoGoal       = config.JACOCO_GOAL
 
-    	script.echo "🔨 Building Docker Image: ${dockerImage}"
+		def jacocoCmd = "${jacocoGroupId}:${jacocoArtifactId}:${jacocoVersion}:${jacocoGoal}"
+    	script.echo "Running Jacoco step: ${jacocoCmd}"
 
-    	def status = script.sh(
-        	script: "docker build . -t ${dockerImage}",
-        	returnStatus: true
-    	)
-		
-        # def output = script.sh(script: "docker build . -t ${dockerImage}", returnStdout: true).trim()
-		
-    	if (status == 0) {
-        	script.echo "✔ Docker image '${dockerImage}' built successfully."
-        	return dockerImage
-    	} else {
-        	script.echo "❌ Docker build failed for image: ${dockerImage}"
-        	script.error("Stopping build because building Docker image failed.")
-       	}
+		// mvn clean test jacoco:prepare-agent jacoco:report   or  mvn clean test ${jacocoCmd} jacoco:report
+
+		try { script.sh """ 
+                 mvn ${jacocoCmd}
+                 mvn clean test jacoco:report
+             """ 
+        }
+    	catch (Exception ex) { script.error "❌ Jacoco Maven step failed: ${ex.message}" }
+		script.echo "✔ JACOCO CODE COVERAGE completed Successfully"
 	}
 }
