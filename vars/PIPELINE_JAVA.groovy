@@ -183,7 +183,7 @@ def call(Map config = [:]) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - DOCKER HUB"
 		   					dockerPush([
 		   						DOCKER_IMAGE:              DOCKER_IMAGE,
-		   						DOCKER_REPO_URI:           config.DOCKER_REPO_URI,
+		   						DOCKER_REGISTRY_URI:       config.DOCKER_REGISTRY_URI,
 		   						DOCKER_HUB_CREDENTIALS_ID: config.DOCKER_HUB_CREDENTIALS_ID
 		   					])
 		   				} else { echo "Skipping... STAGE - DOCKER IMAGE UPLOAD - DOCKER HUB" }
