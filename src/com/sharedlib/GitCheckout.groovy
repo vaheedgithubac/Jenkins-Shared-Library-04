@@ -8,9 +8,9 @@ class GitCheckout implements Serializable {
 
 	def gitCheckout(Map config = [:]) {
 
-		 def required = ["MY_GIT_URL", "MY_GIT_REPO_TYPE"]
+		def required = ["MY_GIT_URL", "MY_GIT_REPO_TYPE"]
 	    required.each { key ->
-	        if (!config[key] || config[key].trim() == "") {
+	        if (!config[key] || config[key]?.toString().trim() == "") {
 	            error "❌ GIT: Missing required parameter '${key}'"
 	        }
 	    }
