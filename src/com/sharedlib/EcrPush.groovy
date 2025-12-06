@@ -10,7 +10,7 @@ class EcrPush implements Serializable {
 
 		def required = ["DOCKER_IMAGE", "ECR_REGISTRY_URI", "REGION", "AWS_CREDENTIALS_ID"]
     	required.each { key ->
-        	if (!config[key] || config[key]?.trim() == "") {
+        	if (!config[key] || config[key]?.toString().trim() == "") {
             	script.error "❌ ECR PUSH: Missing required parameter '${key}'"
         	}
     	}
