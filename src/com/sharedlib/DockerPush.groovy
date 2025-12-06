@@ -8,10 +8,10 @@ class DockerPush implements Serializable {
 
 	def dockerPush(Map config = [:]) {
 
-		def required = ["DOCKER_IMAGE", "DOCKER_HUB_CREDENTIALS_ID", "DOCKER_REGISTRY_URI"]
+		def required = ["DOCKER_IMAGE", "DOCKER_REGISTRY_URI", "DOCKER_HUB_CREDENTIALS_ID"]
 	    required.each { key ->
-	        if (!config[key] || config[key].trim() == "") {
-	            error "❌ DOCKER REGISTRY: Missing required parameter '${key}'"
+	        if (!config[key] || config[key]?.toString().trim() == "") {
+	            error "❌ DOCKER BUILD: Missing required parameter '${key}'"
 	        }
 	    }
 
