@@ -23,7 +23,7 @@ class SendEmail implements Serializable {
           "ATTACHMENTS"
         ]
         required.each { key ->
-            if (!config[key] || config[key].toString().trim() == "") {
+            if (!config[key] || config[key]?.toString().trim() == "") {
                 script.error "❌ SEND EMAIL: Missing required parameter '${key}'"
             }
         }
@@ -31,7 +31,7 @@ class SendEmail implements Serializable {
         def jobName        = config.JOB_NAME
         def buildNumber    = config.BUILD_NUMBER
         def buildURL       = config.BUILD_URL
-        def branchName     = script.env.BRANCH_NAME ?: 
+        def branchName     = script.env.BRANCH_NAME  
         def pipelineStatus = script.currentBuild.currentResult ?: "UNKNOWN"
         def duration       = script.currentBuild.durationString
         def fromMail       = config.FROM_MAIL
