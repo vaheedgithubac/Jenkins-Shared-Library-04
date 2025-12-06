@@ -23,7 +23,7 @@ class MavenBuild implements Serializable {
          
         /*
         def maven_skip_tests = ((config.MAVEN_SKIP_TESTS in [true, 'true', "true"]) ? 'true' : 'false') ?: 'true'
-        def maven_goals = config.maven_goals ?: 'clean package'
+        def maven_goals = config.maven_goals ?: "clean package"
         */
 
         script.echo "🚀 Running Maven build"
@@ -33,7 +33,7 @@ class MavenBuild implements Serializable {
         
         try {
             script.sh """
-                mvn ${mavenGoals} -DskipTests=${mavenSkipTests}
+                mvn "${mavenGoals}" -DskipTests=${mavenSkipTests}
             """
         } catch (Exception ex) {
             script.error "❌ Maven Build failed: ${ex.message}"
