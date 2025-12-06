@@ -22,7 +22,7 @@ class NexusUpload implements Serializable {
             "NEXUS_BASE_REPO"
         ]
         required.each { key ->
-            if (!config[key] || config[key].toString().trim() == "") {
+            if (!config[key] || config[key]?.toString().trim() == "") {
                 script.error "❌ NEXUS: Missing required parameter '${key}'"
             }
         }
@@ -57,7 +57,7 @@ class NexusUpload implements Serializable {
         def filesByGlob = script.findFiles(glob: "target/*.${pom_packaging}")
 
         if (!filesByGlob || filesByGlob.size() == 0) {
-            script.error "❌ No artifact found in /target directory with extension *.${pom_packaging}"
+            script.error "❌ No artifact found in target/ directory with extension *.${pom_packaging}"
         }
 
         def artifactPath = filesByGlob[0].path;
