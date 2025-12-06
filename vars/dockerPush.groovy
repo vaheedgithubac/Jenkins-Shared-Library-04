@@ -2,6 +2,5 @@
 import com.sharedlib.DockerPush
 
 def call(Map config = [:]) {
-   
-    return new DockerPush(this).dockerPush(config)
+   return new DockerPush(this).dockerPush(config)
 }
