@@ -11,6 +11,7 @@ def call(Map config = [:]) {
         }
 
        environment {
+		    MY_GIT_LATEST_COMMIT_ID = ''
 			DOCKER_IMAGE = ''   
 		    NEXUS_ARTIFACT_VERSION = "${BUILD_ID}-${BUILD_TIMESTAMP}"  // Requires Build Timestamp plugin
 	   }
@@ -110,7 +111,7 @@ def call(Map config = [:]) {
 		   			script {
 		   				if (config.EXECUTE_DOCKER_IMAGE_BUILD_STAGE.toLowerCase()?.trim() == "yes") {
 		   					echo "Running...BUILD DOCKER IMAGE"
-		   					DOCKER_IMAGE = dockerImageBuild([
+		   					env.DOCKER_IMAGE = dockerImageBuild([
 		   						PROJECT_NAME: 			 config.PROJECT_NAME,
 		   						COMPONENT: 				 config.COMPONENT,
 		   						MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID
