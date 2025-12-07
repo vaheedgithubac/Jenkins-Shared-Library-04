@@ -34,10 +34,10 @@ class GitCheckout implements Serializable {
     	script.echo "⏳ Checking out Branch:${my_git_branch} From:${my_git_url}..."
     	
     	// Printing Values	
-    	echo "✔ MY_GIT_URL            = ${my_git_url}"
-	    echo "✔ MY_GIT_REPO_TYPE      = ${my_git_repo_type}"
-	    echo "✔ MY_GIT_BRANCH         = ${my_git_branch}"
-	    echo "✔ MY_GIT_CREDENTIALS_ID = ${my_git_credentials_id}"
+    	script.echo "✔ MY_GIT_URL            = ${my_git_url}"
+	    script.echo "✔ MY_GIT_REPO_TYPE      = ${my_git_repo_type}"
+	    script.echo "✔ MY_GIT_BRANCH         = ${my_git_branch}"
+	    script.echo "✔ MY_GIT_CREDENTIALS_ID = ${my_git_credentials_id}"
 
     	script.git(
         	url: my_git_urlL,
