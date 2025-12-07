@@ -58,7 +58,7 @@ def call(Map config = [:]) {
     def outputDir = "trivy-reports"
     sh "mkdir -p ${outputDir}"
 
-    def outputReport = "${outputDir}/${projectName}-${component}-${mode}-${gitLatestCommitId}.${outputFormat}"
+    def outputReport = "${outputDir}/${mode.toUpperCase()}-${projectName}-${component}-${gitLatestCommitId}.${outputFormat}"
 
     echo "🛡 Running Trivy scan"
     echo "📄 Output file : '${outputReport}'"
