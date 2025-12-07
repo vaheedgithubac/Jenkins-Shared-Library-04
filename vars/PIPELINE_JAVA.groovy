@@ -11,7 +11,7 @@ def call(Map config = [:]) {
         }
 
        environment {
-		    MY_GIT_LATEST_COMMIT_ID = ''
+		    //MY_GIT_LATEST_COMMIT_ID = ''
 			DOCKER_IMAGE = ''   
 		    NEXUS_ARTIFACT_VERSION = "${BUILD_ID}-${BUILD_TIMESTAMP}"  // Requires Build Timestamp plugin
 	   }
