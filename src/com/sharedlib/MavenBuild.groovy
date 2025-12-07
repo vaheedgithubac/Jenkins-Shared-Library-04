@@ -33,7 +33,7 @@ class MavenBuild implements Serializable {
         
         try {
             script.sh """
-                mvn "${mavenGoals}" -DskipTests=${mavenSkipTests}
+                mvn "${mavenGoals} -DskipTests=${mavenSkipTests}"
             """
         } catch (Exception ex) {
             script.error "❌ Maven Build failed: ${ex.message}"
