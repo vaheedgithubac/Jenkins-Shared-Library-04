@@ -40,7 +40,7 @@ class GitCheckout implements Serializable {
 	    script.echo "✔ MY_GIT_CREDENTIALS_ID = ${my_git_credentials_id}"
 
     	script.git(
-        	url: my_git_urlL,
+        	url: my_git_url,
         	branch: my_git_branch,
         	credentialsId: my_git_credentials_id
     	) 
