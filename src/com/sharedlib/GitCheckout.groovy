@@ -46,7 +46,7 @@ class GitCheckout implements Serializable {
     	) 
 
     	// Capture Latest Commit ID
-        latestCommitId = script.sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        def latestCommitId = script.sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
 
         script.echo "✔ Successfully checked out branch '${my_git_branch}' from '${my_git_url}'"
         script.echo "Latest Commit Id: ${latestCommitId}"
