@@ -23,8 +23,7 @@ class DockerImageBuild implements Serializable {
         def projectName = config.PROJECT_NAME
         def component   = config.COMPONENT
         def imageTag    = config.MY_GIT_LATEST_COMMIT_ID
-        def dockerImage = "${projectName}-${component}:${imageTag}"
-        def currentWorkingDirectory = "${script.pwd()}"
+        def dockerImage = "${projectName}-${component}:${imageTag}" 
 
         // Docker build context & Dockerfile
         def dockerContext = config.DOCKER_CONTEXT ?: "."
@@ -35,6 +34,7 @@ class DockerImageBuild implements Serializable {
         script.echo "🔨 Building Docker Image: ${dockerImage}"
         script.echo "Docker Context : ${dockerContext}"
         script.echo "Dockerfile     : ${dockerFile}"
+        script.echo "currentWorkingDirectory = "${script.pwd()}"
 
         // Check Dockerfile exists relative to workspace
         //if (!script.fileExists(dockerFile)) {
