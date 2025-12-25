@@ -24,6 +24,7 @@ class DockerImageBuild implements Serializable {
         def component   = config.COMPONENT
         def imageTag    = config.MY_GIT_LATEST_COMMIT_ID
         def dockerImage = "${projectName}-${component}:${imageTag}"
+        def currentWorkingDirectory = "${script.pwd()}"
 
         // Docker build context & Dockerfile
         def dockerContext = config.DOCKER_CONTEXT ?: "."
