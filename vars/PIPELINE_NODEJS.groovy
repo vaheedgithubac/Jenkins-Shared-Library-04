@@ -48,7 +48,7 @@ def call(Map config = [:]) {
 				   			echo "Running... TRIVY FILE SYSTEM SCAN"
 					   		trivyScan([
 					   			MODE:                    "fs",
-					   			TARGET:                  config.TRIVY_FS_TARGET,
+					   			TARGET:                  config.TRIVY_FS_TARGET ?: ".",
 								SCAN_FORMAT:             config.TRIVY_FS_SCAN_FORMAT,
 								OUTPUT_FORMAT:           config.TRIVY_FS_OUTPUT_FORMAT,
 					   			PROJECT_NAME:            config.PROJECT_NAME,
