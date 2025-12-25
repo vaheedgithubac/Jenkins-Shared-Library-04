@@ -35,14 +35,13 @@ class DockerImageBuild implements Serializable {
         script.echo "Dockerfile     : ${dockerFile}"
 
         // Check Dockerfile exists relative to workspace
-        def dockerfilePath = "${dockerContext}/${dockerFile}"
-        if (!script.fileExists(dockerfilePath)) {
-            script.error("❌ Dockerfile not found at ${dockerfilePath}")
+        if (!script.fileExists(dockerFile)) {
+            script.error("❌ Dockerfile not found at ${dockerFile}")
         }
 
         // Build the Docker image
         def status = script.sh(
-            script: "docker build ${dockerContext} -t ${dockerImage} -f ${dockerfilePath}",
+            script: "docker build ${dockerContext} -t ${dockerImage} -f ${dockerFile}",
             returnStatus: true
         )
 
