@@ -1,7 +1,5 @@
 // DOCKER BUILD Variables
 EXECUTE_DOCKER_IMAGE_BUILD_STAGE: "yes",   // required (yes/no)
-DOCKER_CONTEXT: "app-code/frontend",       // defaults to "."
-DOCKERFILE: "Docker/Dockerfile",           // defaults to "Dockerfile"
 ############################################################################################################################
 stage("BUILD DOCKER IMAGE") {
                 steps {
@@ -57,7 +55,7 @@ class DockerImageBuild implements Serializable {
 
         // Build the Docker image
         def status = script.sh(
-            script: "docker build . -t ${dockerImage}  ",
+            script: "docker build . -t ${dockerImage}",
             returnStatus: true
         )
 
