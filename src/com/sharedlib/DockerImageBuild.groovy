@@ -35,9 +35,9 @@ class DockerImageBuild implements Serializable {
         script.echo "Dockerfile     : ${dockerFile}"
 
         // Check Dockerfile exists relative to workspace
-        if (!script.fileExists(dockerFile)) {
-            script.error("❌ Dockerfile not found at ${dockerFile}")
-        }
+        //if (!script.fileExists(dockerFile)) {
+        //    script.error("❌ Dockerfile not found at ${dockerFile}")
+        //}
 
         // Build the Docker image
         def status = script.sh(
