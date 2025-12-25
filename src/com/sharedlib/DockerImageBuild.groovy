@@ -11,7 +11,7 @@ class DockerImageBuild implements Serializable {
 		def required = ["PROJECT_NAME", "COMPONENT", "MY_GIT_LATEST_COMMIT_ID"]
 	    required.each { key ->
 	        if (!config[key] || config[key]?.toString().trim() == "") {
-	           error "❌ DOCKER IMAGE BUILD: Missing required parameter '${key}'"
+	           script.error "❌ DOCKER IMAGE BUILD: Missing required parameter '${key}'"
 	        }
 	    }
 
