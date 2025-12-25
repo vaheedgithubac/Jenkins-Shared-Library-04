@@ -18,6 +18,7 @@ class DockerImageBuild implements Serializable {
 	    def projectName   = config.PROJECT_NAME
 		def component     = config.COMPONENT
 		def imageTag      = config.MY_GIT_LATEST_COMMIT_ID
+		def dockerImage   = "${projectName}-${component}:${imageTag}"
 		
     	script.echo "🔨 Building Docker Image: ${dockerImage}"
 		
