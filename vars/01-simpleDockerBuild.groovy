@@ -67,3 +67,66 @@ class DockerImageBuild implements Serializable {
         }
     }
 }
+#########################################################################    frontend    #########################################################################################
+# docker build app-code/frontend -t frontend-img:1.0.0 -f Docker/Dockerfile
+FROM nginx:stable-alpine
+
+# Remove default server and default index
+RUN rm -f \
+    /usr/share/nginx/html/index.html \
+    /etc/nginx/conf.d/default.conf
+
+# Prepare directories for non-root nginx
+RUN mkdir -p \
+    /var/cache/nginx/client_temp \
+    /var/cache/nginx/proxy_temp \
+    /var/cache/nginx/fastcgi_temp \
+    /var/cache/nginx/uwsgi_temp \
+    /var/cache/nginx/scgi_temp \
+    /run \
+    /etc/nginx/ssl \
+  && chown -R nginx:nginx \
+    /var/cache/nginx \
+    /var/log/nginx \
+    /etc/nginx \
+    /run \
+  && chmod 755 /etc/nginx
+
+# Copy custom NGINX config
+COPY files/expense.conf /etc/nginx/conf.d/expense.conf
+
+# Ensure config file permissions
+RUN chmod 644 /etc/nginx/conf.d/*.conf
+
+# Copy frontend files
+COPY code/. /usr/share/nginx/html/
+
+EXPOSE 8080
+
+USER nginx
+
+CMD ["nginx", "-g", "daemon off;"]
+#################################################################################   backend  ##################################################################################################
+# docker build app-code/backend -t backend-img:1.0.0 -f Docker/Dockerfile
+#FROM node:20
+FROM node:20.18.3-alpine3.21 AS builder
+WORKDIR /opt/backend
+COPY code/package.json ./
+COPY code/*.js ./
+RUN npm install
+
+
+FROM node:20.18.3-alpine3.21
+RUN addgroup -S expense && adduser -S expense -G expense && \
+    mkdir /opt/backend && \
+    chown -R expense:expense /opt/backend
+ENV DB_HOST         # ="mysql"
+WORKDIR /opt/backend
+USER expense
+COPY --from=builder /opt/backend /opt/backend
+CMD ["node", "index.js"]
+#################################################################################   database  ##################################################################################################
+# docker build app-code/database -t database-img:1.0.0 -f Docker/Dockerfile
+FROM mysql:8.0
+# ENV MYSQL_ROOT_PASSWORD=ExpenseApp@1
+COPY files/mysql_scripts/*.sql /docker-entrypoint-initdb.d
