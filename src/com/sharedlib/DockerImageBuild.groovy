@@ -28,7 +28,7 @@ class DockerImageBuild implements Serializable {
         // Docker build context & Dockerfile
         def dockerContext = config.DOCKER_CONTEXT
         def dockerFile    = config.DOCKERFILE ?: "Dockerfile"
-        def dockerContextFullPath = ${script.pwd()}/${dockerContext}" ?: "." 
+        def dockerContextFullPath = "${script.pwd()}/${dockerContext}" ?: "." 
         def dockerFileFullPath    = "${script.pwd()}/${dockerContext}/${dockerFile}"
 
         // Echo for debugging
