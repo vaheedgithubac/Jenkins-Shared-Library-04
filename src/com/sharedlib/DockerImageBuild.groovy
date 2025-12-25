@@ -25,7 +25,7 @@ class DockerImageBuild implements Serializable {
 		def dockerFile    = config.DOCKERFILE ?: "Dockerfile"
 		
     	script.echo "🔨 Building Docker Image: ${dockerImage}"
-		# docker build . -t ${dockerImage}
+		// docker build . -t ${dockerImage}
 		
 		def status = script.sh(
         	script: "docker build ${dockerContext} -t ${dockerImage} -f ${dockerFile}",
