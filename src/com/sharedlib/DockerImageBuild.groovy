@@ -34,7 +34,7 @@ class DockerImageBuild implements Serializable {
         script.echo "🔨 Building Docker Image: ${dockerImage}"
         script.echo "Docker Context : ${dockerContext}"
         script.echo "Dockerfile     : ${dockerFile}"
-        script.echo "currentWorkingDirectory = "${script.pwd()}"
+        script.echo "currentWorkingDirectory = ${script.pwd()}"
 
         // Check Dockerfile exists relative to workspace
         //if (!script.fileExists(dockerFile)) {
