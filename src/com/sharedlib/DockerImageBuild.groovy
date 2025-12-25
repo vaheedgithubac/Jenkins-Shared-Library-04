@@ -44,7 +44,7 @@ class DockerImageBuild implements Serializable {
 
         // Build the Docker image
         def status = script.sh(
-            script: "docker build ${dockerContextFullPath} -t ${dockerImage} -f ${dockerFileFullPath} ",
+            script: "docker build ${dockerContextFullPath} -t ${dockerImage} -f ${dockerFileFullPath}",
             returnStatus: true
         )
 
