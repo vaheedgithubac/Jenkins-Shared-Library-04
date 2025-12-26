@@ -96,9 +96,7 @@ def call(Map config = [:]) {
 		   					env.DOCKER_IMAGE = dockerImageBuild([
 		   						PROJECT_NAME: 			 config.PROJECT_NAME,
 		   						COMPONENT: 				 config.COMPONENT,
-		   						MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
-								DOCKER_CONTEXT:          config.DOCKER_CONTEXT ?: ".",
-								DOCKERFILE:              config.DOCKERFILE ?: "Dockerfile"
+		   						MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID
 		   					])
 		   					echo "IMAGE BUILT SUCCESSFULLY: ${DOCKER_IMAGE}"
 		   				} else { echo "Skipping... STAGE - BUILD DOCKER IMAGE" }
