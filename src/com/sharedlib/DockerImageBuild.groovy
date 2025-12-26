@@ -37,7 +37,7 @@ class DockerImageBuild implements Serializable {
         script.echo "DockerFile Full Path: ${dockerFileFullPath}"
         
         // Check Dockerfile exists relative to workspace
-        if (!script.fileExists(dockerFileFullPath) {
+        if (!script.fileExists(dockerFileFullPath)) {
             script.error("❌ 'Dockerfile' not found at ${dockerFullContextPath}")
         }
         
