@@ -25,26 +25,12 @@ class DockerImageBuild implements Serializable {
         def imageTag    = config.MY_GIT_LATEST_COMMIT_ID
         def dockerImage = "${projectName}-${component}:${imageTag}" 
 
-        // Docker build context & Dockerfile
-        def dockerContext = config.DOCKER_CONTEXT
-        def dockerFile    = config.DOCKERFILE ?: "Dockerfile"
-        def dockerContextFullPath = "${script.pwd()}/${dockerContext}" ?: "." 
-        def dockerFileFullPath    = "${dockerContextFullPath}/${dockerFile}"
-
         // Echo for debugging
         script.echo "🔨 Building Docker Image: ${dockerImage}"
-        script.echo "Docker Context : ${dockerContext}"
-        script.echo "Dockerfile     : ${dockerFile}"
-        script.echo "currentWorkingDirectory = ${script.pwd()}"     // Returns Jenkins workspace
-
-        // Check Dockerfile exists relative to workspace
-        //if (!script.fileExists(dockerFile)) {
-        //    script.error("❌ Dockerfile not found at ${dockerFile}")
-        //}
-
+        
         // Build the Docker image
         def status = script.sh(
-            script: "docker build ${dockerContextFullPath} -t ${dockerImage} -f ${dockerFileFullPath}",
+            script: "docker build . -t ${dockerImage}",
             returnStatus: true
         )
 
