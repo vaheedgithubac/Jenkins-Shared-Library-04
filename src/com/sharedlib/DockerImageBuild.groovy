@@ -23,6 +23,8 @@ class DockerImageBuild implements Serializable {
         def projectName = config.PROJECT_NAME
         def component   = config.COMPONENT
         def imageTag    = config.MY_GIT_LATEST_COMMIT_ID
+        def dockerContext = config.DOCKER_CONTEXT
+        def dockerFullContextPath = "${script.pwd()}/${dockerContext}"
         def dockerImage = "${projectName}-${component}:${imageTag}" 
 
         // Echo for debugging
@@ -30,7 +32,7 @@ class DockerImageBuild implements Serializable {
         
         // Build the Docker image
         def status = script.sh(
-            script: "docker build . -t ${dockerImage}",
+            script: "docker build ${dockerFullContextPath} -t ${dockerImage}",
             returnStatus: true
         )
 
