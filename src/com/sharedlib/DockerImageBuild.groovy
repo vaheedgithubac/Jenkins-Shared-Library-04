@@ -25,17 +25,19 @@ class DockerImageBuild implements Serializable {
         def imageTag    = config.MY_GIT_LATEST_COMMIT_ID
         def dockerImage = "${projectName}-${component}:${imageTag}" 
 
-        def dockerContext = config.DOCKER_CONTEXT
-        def dockerFullContextPath = "${script.pwd()}/${dockerContext}"
-        def dockerFile    = config.DOCKERFILE ?: "Dockerfile"
+        def dockerContext         = config.DOCKER_CONTEXT ?: "."
+        def dockerContextFullPath = "${script.pwd()}/${dockerContext}"
+        def dockerFile            = config.DOCKERFILE ?: "Dockerfile"
+        def dockerFileFullPath    = "${dockerContextFullPath}/${dockerFile}" 
         
         // debug info
         script.echo "Docker Context: ${dockerContext}"
-        script.echo "Docker Context Full Path: ${dockerFullContextPath}"
+        script.echo "Docker Context Full Path: ${dockerContextFullPath}"
         script.echo "DockerFile: ${dockerFile}"
+        script.echo "DockerFile Full Path: ${dockerFileFullPath}"
         
         // Check Dockerfile exists relative to workspace
-        if (!script.fileExists(${dockerFullContextPath}/${dockerFile})) {
+        if (!script.fileExists(dockerFileFullPath) {
             script.error("❌ 'Dockerfile' not found at ${dockerFullContextPath}")
         }
         
@@ -44,7 +46,7 @@ class DockerImageBuild implements Serializable {
         
         // Build the Docker image
         def status = script.sh(
-            script: "docker build ${dockerFullContextPath} -t ${dockerImage}",
+            script: "docker build ${dockerContextFullPath} -t ${dockerImage} -f ${dockerFileFullPath}",
             returnStatus: true
         )
 
