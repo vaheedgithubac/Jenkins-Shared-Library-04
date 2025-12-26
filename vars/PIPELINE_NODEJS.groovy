@@ -188,6 +188,29 @@ def call(Map config = [:]) {
 		   		}
 		    }
 
+		   stage("UPDATE_IMAGE_TAG_GITHUB") {
+			   steps {
+				   script {
+					   if (config.EXECUTE_UPDATE_IMAGE_TAG_GITHUB_STAGE.equalsIgnoreCase("yes")) {
+						   withCredentials([
+                        		usernamePassword(
+                            		credentialsId: config.GIT_DEPLOY_HTTPS_CREDS,
+                            		usernameVariable: 'GIT_USER',
+                            		passwordVariable: 'GIT_TOKEN'
+                        		)
+                    		]) {
+                        		updateImageTag(
+                            		DOCKER_IMAGE:            env.DOCKER_IMAGE,
+									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
+                            		DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
+									HELM_VALUES_FILE:        config.HELM_VALUES_FILE
+                        		)
+                    		}
+					   }
+				   }
+			   }
+		   }
+
 
 		   
 	   } // stages
