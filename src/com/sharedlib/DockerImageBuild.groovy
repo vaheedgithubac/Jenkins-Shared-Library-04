@@ -30,11 +30,13 @@ class DockerImageBuild implements Serializable {
         def dockerFile            = config.DOCKERFILE ?: "Dockerfile"
         def dockerFileFullPath    = "${dockerContextFullPath}/${dockerFile}" 
         
-        // debug info
-        script.echo "Docker Context: ${dockerContext}"
-        script.echo "Docker Context Full Path: ${dockerContextFullPath}"
-        script.echo "DockerFile: ${dockerFile}"
-        script.echo "DockerFile Full Path: ${dockerFileFullPath}"
+        script.echo """
+        📄 Docker Build Details:
+            Docker Context            : ${dockerContext}
+            Docker Context Full Path  : ${dockerContextFullPath}
+            DockerFile                : ${dockerFile}
+            DockerFile Full Path      : ${dockerFileFullPath}
+        """
         
         // Check Dockerfile exists relative to workspace
         if (!script.fileExists(dockerFileFullPath)) {
