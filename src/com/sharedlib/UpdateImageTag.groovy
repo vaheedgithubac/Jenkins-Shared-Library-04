@@ -87,7 +87,7 @@ class UpdateImageTag implements Serializable {
         }
 
         def files = config.FILES.join(' ')
-
+        
         script.sh """
             git config user.name "jenkins"
             git config user.email "jenkins@company.com"
