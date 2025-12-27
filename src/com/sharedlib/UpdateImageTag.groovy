@@ -28,7 +28,6 @@ class UpdateImageTag implements Serializable {
         def deploymentFile = config.DEPLOYMENT_FILE
         def helmValuesFile = config.HELM_VALUES_FILE
 
-
         // -----------------------------
         // Extract image name and tag
         // -----------------------------
@@ -46,21 +45,16 @@ class UpdateImageTag implements Serializable {
         def searchImage  = "${gitUser}/${dockerImageWithoutTag}"
         def replaceImage = "${gitUser}/${dockerImageWithoutTag}:${latestImageTag}"
 
-        if (!config.DEPLOYMENT_FILE && !config.HELM_VALUES_FILE) {
-            script.error "Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided"
-        }
-        
-        if (config.DEPLOYMENT_FILE && config.HELM_VALUES_FILE) {
-            script.error "Provide only one: DEPLOYMENT_FILE or HELM_VALUES_FILE"
-        }
+        if (!config.DEPLOYMENT_FILE && !config.HELM_VALUES_FILE) { script.error "Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided" }
+        if (config.DEPLOYMENT_FILE && config.HELM_VALUES_FILE) { script.echo "Provided files are: DEPLOYMENT_FILE and HELM_VALUES_FILE" }
 
         if (config.DEPLOYMENT_FILE?.trim()) {  // covers: null, "", " "
-            script.echo "Deployment file provided: ${config.DEPLOYMENT_FILE}"
+            script.echo "Updating Deployment file: ${config.DEPLOYMENT_FILE}"
             script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
         } 
-
+        
         if (config.HELM_VALUES_FILE?.trim()) {
-            script.echo "Helm values file provided: ${config.HELM_VALUES_FILE}"
+            script.echo "Updating Helm values file: ${config.HELM_VALUES_FILE}"
             script.sh "sed -i 's|version:.*|version: ${imageTag}|' ${helmValuesFile}"
         } 
 
