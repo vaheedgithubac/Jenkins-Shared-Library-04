@@ -91,7 +91,9 @@ class UpdateImageTag implements Serializable {
         def files = config.FILES.join(' ')
 
         def vcsHost
-        switch (config.VERSION_CONTROL_SYSTEM?.trim()?.toLowerCase()) {
+        def vcs = config.VERSION_CONTROL_SYSTEM?.trim()?.toLowerCase() ?: "github"
+        
+        switch (vcs) {
             case "github":
                 vcsHost = "github.com"
                 break
