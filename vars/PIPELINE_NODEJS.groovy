@@ -211,7 +211,7 @@ def call(Map config = [:]) {
 									HELM_VALUES_FILE:        config.HELM_VALUES_FILE
                         		)
                     		}
-					   }
+					   } else { echo "Skipping... Stage - UPDATE_IMAGE_TAG_GITHUB (flag not set to 'yes')" }
 				   }
 			   }
 		   }
