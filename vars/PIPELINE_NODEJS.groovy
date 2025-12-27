@@ -33,7 +33,7 @@ def call(Map config = [:]) {
 	   					//env.MY_GIT_LATEST_COMMIT_ID = getLatestCommitIdShort() ( To get this work, you should not declare a variable under pipeline environment{} block )
 						// MY_GIT_LATEST_COMMIT_ID = getLatestCommitIdShort()
 						
-						if (config.EXECUTE_GITCHECKOUT_STAGE.equalsIgnoreCase("yes")) {
+						if (config.EXECUTE_GITCHECKOUT_STAGE?.trim().equalsIgnoreCase("yes")) {
 							env.MY_GIT_LATEST_COMMIT_ID = gitCheckout([MY_GIT_URL: config.MY_GIT_URL, MY_GIT_REPO_TYPE: config.MY_GIT_REPO_TYPE])
 	   						echo "MY_GIT_LATEST_COMMIT_ID: ${env.MY_GIT_LATEST_COMMIT_ID}"
 						}
@@ -44,7 +44,7 @@ def call(Map config = [:]) {
 	   		stage("TRIVY FILE SYSTEM SCAN") {
 			   steps {
 				   script { 
-				   		if (config.EXECUTE_TRIVY_FS_STAGE.equalsIgnoreCase("yes")) {
+				   		if (config.EXECUTE_TRIVY_FS_STAGE?.trim().equalsIgnoreCase("yes")) {
 				   			echo "Running... TRIVY FILE SYSTEM SCAN"
 					   		trivyScan([
 					   			MODE:                    "fs",
@@ -63,7 +63,7 @@ def call(Map config = [:]) {
 		    stage("SONARQUBE SCAN - SAST") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_SONARSCAN_STAGE.equalsIgnoreCase("yes")) {
+		   				if (config.EXECUTE_SONARSCAN_STAGE?.trim().equalsIgnoreCase("yes")) {
 				   			echo "Running... SONARQUBE SCAN - SAST"
 					   		sonarqubeScan([
 					   			SONARQUBE_SERVER: config.SONARQUBE_SERVER,
@@ -79,7 +79,7 @@ def call(Map config = [:]) {
 		    stage("SONARQUBE QUALITY GATE") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_SONAR_QG_STAGE.equalsIgnoreCase("yes")) {
+		   				if (config.EXECUTE_SONAR_QG_STAGE?.trim().equalsIgnoreCase("yes")) {
 				   			echo "Running... SONARQUBE QUALITY GATE"
 					   		sonarqubeQG([TIMEOUT_MINUTES: config.TIMEOUT_MINUTES])
 					   	} else { echo "Skipping...STAGE - SONARQUBE QUALITY GATE" }
@@ -91,7 +91,7 @@ def call(Map config = [:]) {
 		    stage("BUILD DOCKER IMAGE") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_DOCKER_IMAGE_BUILD_STAGE.equalsIgnoreCase("yes")) {
+		   				if (config.EXECUTE_DOCKER_IMAGE_BUILD_STAGE?.trim().equalsIgnoreCase("yes")) {
 		   					echo "Running...BUILD DOCKER IMAGE"
 		   					env.DOCKER_IMAGE = dockerImageBuild([
 		   						PROJECT_NAME: 			 config.PROJECT_NAME,
@@ -108,7 +108,7 @@ def call(Map config = [:]) {
 		    stage("DOCKER IMAGE SCAN - TRIVY") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_TRIVY_IMAGE_STAGE.equalsIgnoreCase("yes")) {
+		   				if (config.EXECUTE_TRIVY_IMAGE_STAGE?.trim().equalsIgnoreCase("yes")) {
 		   					echo ("Running...DOCKER IMAGE SCAN - TRIVY")
 		   					trivyScan([
 					   			MODE:                    "image",
@@ -127,7 +127,7 @@ def call(Map config = [:]) {
 		    stage("NEXUS ARTIFACT UPLOAD") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_NEXUS_STAGE.equalsIgnoreCase("yes")) {
+		   				if (config.EXECUTE_NEXUS_STAGE?.trim().equalsIgnoreCase("yes")) {
 		   					if (configMap.NEXUS_CREDENTIALS_ID?.trim()) {
     							echo "Nexus credentials ID is provided: ${config.NEXUS_CREDENTIALS_ID}"
 		   						withCredentials([usernamePassword(
@@ -160,7 +160,7 @@ def call(Map config = [:]) {
 		    stage("DOCKER IMAGE UPLOAD - DOCKER HUB") {
 		   		steps {
 		   			script {
-                        if (config.EXECUTE_DOCKER_HUB_PUSH_STAGE.equalsIgnoreCase("yes")) {
+                        if (config.EXECUTE_DOCKER_HUB_PUSH_STAGE?.trim().equalsIgnoreCase("yes")) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - DOCKER HUB"
 		   					dockerPush([
 		   						DOCKER_IMAGE:              env.DOCKER_IMAGE,
@@ -175,7 +175,7 @@ def call(Map config = [:]) {
 		    stage("DOCKER IMAGE UPLOAD - ECR") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_ECR_PUSH_STAGE.equalsIgnoreCase("yes")) {
+		   				if (config.EXECUTE_ECR_PUSH_STAGE?.trim().equalsIgnoreCase("yes")) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - ECR"
 		   					ecrPush([
 		   						DOCKER_IMAGE:       env.DOCKER_IMAGE,
@@ -191,7 +191,7 @@ def call(Map config = [:]) {
 		   stage("UPDATE_IMAGE_TAG_GITHUB") {
 			   steps {
 				   script {
-					   if (config.EXECUTE_UPDATE_IMAGE_TAG_GITHUB_STAGE.equalsIgnoreCase("yes")) {
+					   if (config.EXECUTE_UPDATE_IMAGE_TAG_GITHUB_STAGE?.trim().equalsIgnoreCase("yes")) {
 						   withCredentials([
                         		usernamePassword(
                             		credentialsId: config.GIT_DEPLOY_HTTPS_CREDS,
@@ -202,6 +202,11 @@ def call(Map config = [:]) {
                         		updateImageTag(
                             		DOCKER_IMAGE:            env.DOCKER_IMAGE,
 									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
+									GIT_USER:                env.GIT_USER,
+									GIT_TOKEN:               env.GIT_TOKEN,
+									GIT_REPO_NAME:           config.GIT_REPO_NAME,
+									GIT_BRANCH_NAME:         env.GIT_BRANCH,
+									VERSION_CONTROL_SYSTEM:  config.VERSION_CONTROL_SYSTEM,
                             		DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
 									HELM_VALUES_FILE:        config.HELM_VALUES_FILE
                         		)
