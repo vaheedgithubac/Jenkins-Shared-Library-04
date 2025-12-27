@@ -11,80 +11,92 @@ class UpdateImageTag implements Serializable {
 
     def updateImageTag(Map config = [:]) {
 
-        // ✅ Required parameters
-        def required = ["DOCKER_IMAGE", "MY_GIT_LATEST_COMMIT_ID", "GIT_USER", "GIT_TOKEN"]
+        def required = [
+            "DOCKER_IMAGE",
+            "GITHUB_USER",
+            "GITHUB_TOKEN",
+            "GITHUB_REPO_NAME",
+            "GIT_BRANCH_NAME",
+            "MY_GIT_LATEST_COMMIT_ID"
+        ]
+
         required.each { key ->
-            if (!config[key] || config[key].toString().trim() == "") {
+            if (!config[key]?.toString()?.trim()) {
                 script.error("❌ UPDATE IMAGE TAG: Missing required parameter '${key}'")
             }
         }
 
-        def latestImageTag  = config.MY_GIT_LATEST_COMMIT_ID
-        def fullDockerImage = config.DOCKER_IMAGE      // expense-backend:65tdyd
-
-        def gitUser  = config.GIT_USER
-        def gitToken = config.GIT_TOKEN
-
         def deploymentFile = config.DEPLOYMENT_FILE
         def helmValuesFile = config.HELM_VALUES_FILE
 
-        // -----------------------------
-        // Extract image name and tag
-        // -----------------------------
-        def imageParts = fullDockerImage.split(':')
-        def dockerImageWithoutTag = imageParts[0]
-        def imageTag = (imageParts.size() > 1) ? imageParts[1] : "latest"
+        def filesToCommit = []
 
-        script.echo """
-        📄 Image Details:
-            Full image       : ${fullDockerImage}
-            Image without Tag: ${dockerImageWithoutTag}
-            Tag              : ${imageTag}      
-        """
-        // ${Tag} and ${latestImageTag} both are same since we took latest built docker image
-        def searchImage  = "${gitUser}/${dockerImageWithoutTag}"
-        def replaceImage = "${gitUser}/${dockerImageWithoutTag}:${latestImageTag}"
+        def fullDockerImage = config.DOCKER_IMAGE
+        def imageName = fullDockerImage.split(':')[0]
 
-        if (!config.DEPLOYMENT_FILE && !config.HELM_VALUES_FILE) { script.error "Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided" }
-        if (config.DEPLOYMENT_FILE && config.HELM_VALUES_FILE) { script.echo "Provided files are: DEPLOYMENT_FILE and HELM_VALUES_FILE" }
+        def searchImage  = "${config.GITHUB_USER}/${imageName}"
+        def replaceImage = "${config.GITHUB_USER}/${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
 
-        if (config.DEPLOYMENT_FILE?.trim()) {  // covers: null, "", " "
-            script.echo "Updating Deployment file: ${config.DEPLOYMENT_FILE}"
+        if (!deploymentFile && !helmValuesFile) {
+            script.error("Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided")
+        }
+
+        if (deploymentFile?.trim()) {
+            script.echo "Updating deployment file: ${deploymentFile}"
             script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
-        } 
-        
-        if (config.HELM_VALUES_FILE?.trim()) {
-            script.echo "Updating Helm values file: ${config.HELM_VALUES_FILE}"
-            script.sh "sed -i 's|version:.*|version: ${imageTag}|' ${helmValuesFile}"
-        } 
+            filesToCommit << deploymentFile
+        }
+
+        if (helmValuesFile?.trim()) {
+            script.echo "Updating helm values file: ${helmValuesFile}"
+            script.sh "sed -i 's|imageVersion:.*|imageVersion: ${config.MY_GIT_LATEST_COMMIT_ID}|' ${helmValuesFile}"
+            filesToCommit << helmValuesFile
+        }
+
+        gitCommitAndPush(
+            FILES: filesToCommit,
+            GITHUB_USER: config.GITHUB_USER,
+            GITHUB_TOKEN: config.GITHUB_TOKEN,
+            GITHUB_REPO_NAME: config.GITHUB_REPO_NAME,
+            GIT_BRANCH_NAME: config.GIT_BRANCH_NAME,
+            MY_GIT_LATEST_COMMIT_ID: config.MY_GIT_LATEST_COMMIT_ID
+        )
+    }
+
+    // ✅ MUST be here (class-level)
+    private void gitCommitAndPush(Map config = [:]) {
+
+        // ✅ Skip if nothing to commit
+        if (!config.FILES || config.FILES.isEmpty()) {
+         script.echo "ℹ️ No files to commit. Skipping git commit & push."
+         return
+        }
+
+        def required = [
+            "GITHUB_USER",
+            "GITHUB_TOKEN",
+            "GITHUB_REPO_NAME",
+            "GIT_BRANCH_NAME",
+            "MY_GIT_LATEST_COMMIT_ID"
+        ]
+
+        required.each { key ->
+            if (!config[key]?.toString()?.trim()) {
+                script.error("❌ GIT COMMIT: Missing required parameter '${key}'")
+            }
+        }
+
+        def files = config.FILES.join(' ')
 
         script.sh """
             git config user.name "jenkins"
             git config user.email "jenkins@company.com"
 
-            git add ${deploymentFile}
-            git commit -m "Update image tag to ${commitId}"
-            git push https://${gitUser}:${gitToken}@github.com/ORG/REPO.git HEAD:${env.BRANCH_NAME}
+            git add ${files}
+            git commit -m "Update image tag to '${config.MY_GIT_LATEST_COMMIT_ID}'" || echo "Nothing to commit"
+            git push https://${config.GITHUB_USER}:${config.GITHUB_TOKEN}@github.com/${config.GITHUB_USER}/${config.GITHUB_REPO_NAME}.git HEAD:${config.GIT_BRANCH_NAME}
         """
 
-    } //def
+        script.echo "✅ Image tag updated successfully for files: ${files}"
+    }
 }
-
-
-2️⃣ Safe sed command
-
-Replace only the container that matches the name:
-
-sed -i "/- name: ${component}/{n;s|image:.*|image: ${replaceImage}|}" ${deploymentFile}
-
-Explanation:
-
-/- name: ${component}/
-
-Finds the line with your container name (must match component parameter).
-
-{n; s|image:.*|image: ${replaceImage}|}
-
-n → moves to the next line (which should be the image: line)
-
-s|image:.*|image: ${replaceImage}| → replaces that line only
