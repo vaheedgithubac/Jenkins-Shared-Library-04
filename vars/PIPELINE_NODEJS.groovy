@@ -205,7 +205,7 @@ def call(Map config = [:]) {
 									GIT_USER:                env.GIT_USER,
 									GIT_TOKEN:               env.GIT_TOKEN,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
-									GIT_BRANCH_NAME:         env.BRANCH_NAME,
+									GIT_BRANCH_NAME:         config.MY_GIT_BRANCH,
 									VERSION_CONTROL_SYSTEM:  config.VERSION_CONTROL_SYSTEM,
                             		DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
 									HELM_VALUES_FILE:        config.HELM_VALUES_FILE
