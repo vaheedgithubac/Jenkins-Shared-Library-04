@@ -200,7 +200,7 @@ def call(Map config = [:]) {
                         		)
                     		]) {
                         		updateImageTag(
-                            		DOCKER_IMAGE:            env.DOCKER_IMAGE,
+                            		DOCKER_IMAGE:            config.DOCKER_IMAGE,   //env.DOCKER_IMAGE,
 									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
 									GIT_USER:                env.GIT_USER,
 									GIT_TOKEN:               env.GIT_TOKEN,
