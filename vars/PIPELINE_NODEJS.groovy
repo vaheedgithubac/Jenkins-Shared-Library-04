@@ -222,7 +222,7 @@ def call(Map config = [:]) {
 	   post {
 	   		always {
 	   			script {
-	   				if (config.EXECUTE_EMAIL_STAGE.toLowerCase()?.trim() == "yes") {
+	   				if ("yes".equalsIgnoreCase(config.EXECUTE_EMAIL_STAGE?.trim())) {
 	   					echo "Sending Email"
 	   					sendEmail([
 			                 JOB_NAME:        env.JOB_NAME,
