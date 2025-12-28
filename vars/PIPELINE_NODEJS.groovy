@@ -199,7 +199,7 @@ def call(Map config = [:]) {
                             		passwordVariable: 'GIT_TOKEN'
                         		)
                     		]) {
-							    def branchName = config.MY_GIT_BRANCH ?: env.BRANCH_NAME ?: "main"
+							    //def branchName = config.MY_GIT_BRANCH ?: env.BRANCH_NAME ?: "main"
                         		updateImageTag(
                             		DOCKER_IMAGE:            config.DOCKER_IMAGE,   //env.DOCKER_IMAGE,
 									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
