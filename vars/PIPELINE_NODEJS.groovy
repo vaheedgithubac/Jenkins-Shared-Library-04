@@ -195,11 +195,11 @@ def call(Map config = [:]) {
 					   if ("yes".equalsIgnoreCase(config.EXECUTE_UPDATE_IMAGE_TAG_GITHUB_STAGE?.trim())) {
 							    updateImageTag(
                             		DOCKER_IMAGE:            config.DOCKER_IMAGE,   //env.DOCKER_IMAGE,
-									VERSION_CONTROL_SYSTEM:  config.VERSION_CONTROL_SYSTEM,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
 									GIT_BRANCH_NAME:         env.MY_GIT_BRANCH,
-									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
 									GIT_DEPLOY_HTTPS_CREDS:  config.GIT_DEPLOY_HTTPS_CREDS, 
+									VERSION_CONTROL_SYSTEM:  config.VERSION_CONTROL_SYSTEM,
+									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
 								    DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
 									HELM_VALUES_FILE:        config.HELM_VALUES_FILE
                         		)
