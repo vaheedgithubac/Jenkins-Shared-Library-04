@@ -32,6 +32,7 @@ class UpdateImageTag implements Serializable {
 
         def fullDockerImage = config.DOCKER_IMAGE
         def imageName = fullDockerImage.trim().split(':')[0]
+        
         def searchImage  = "${imageName}" // No need for GIT_USER in search, optional
         def replaceImage = "${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
 
