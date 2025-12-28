@@ -110,7 +110,9 @@ class UpdateImageTag implements Serializable {
 
             git add ${files}
             git commit -m "Update image tag to '${config.MY_GIT_LATEST_COMMIT_ID}'" || echo "Nothing to commit"
+            set +x
             git push https://${config.GIT_USER}:${config.GIT_TOKEN}@${vcsHost}/${config.GIT_USER}/${config.GIT_REPO_NAME}.git HEAD:${config.GIT_BRANCH_NAME}
+            set -x
         """
 
         script.echo "✅ Image tag updated successfully for files: ${files}"
