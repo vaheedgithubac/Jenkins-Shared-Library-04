@@ -70,10 +70,10 @@ class UpdateImageTag implements Serializable {
         }
 
         def required = [
-            "VERSION_CONTROL_SYSTEM",
             "GIT_REPO_NAME",
             "GIT_BRANCH_NAME",
             "GIT_DEPLOY_HTTPS_CREDS",
+            "VERSION_CONTROL_SYSTEM",
             "MY_GIT_LATEST_COMMIT_ID"
         ]
 
