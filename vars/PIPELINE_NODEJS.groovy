@@ -44,7 +44,7 @@ def call(Map config = [:]) {
 	   		stage("TRIVY FILE SYSTEM SCAN") {
 			   steps {
 				   script { 
-				   		if (config.EXECUTE_TRIVY_FS_STAGE?.trim().equalsIgnoreCase("yes")) {
+				   		if ("yes".equalsIgnoreCase(config.EXECUTE_TRIVY_FS_STAGE?.trim())) {
 				   			echo "Running... TRIVY FILE SYSTEM SCAN"
 					   		trivyScan([
 					   			MODE:                    "fs",
@@ -63,7 +63,7 @@ def call(Map config = [:]) {
 		    stage("SONARQUBE SCAN - SAST") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_SONARSCAN_STAGE?.trim().equalsIgnoreCase("yes")) {
+		   				if ("yes".equalsIgnoreCase(config.EXECUTE_SONARSCAN_STAGE?.trim())) {
 				   			echo "Running... SONARQUBE SCAN - SAST"
 					   		sonarqubeScan([
 					   			SONARQUBE_SERVER: config.SONARQUBE_SERVER,
@@ -79,7 +79,7 @@ def call(Map config = [:]) {
 		    stage("SONARQUBE QUALITY GATE") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_SONAR_QG_STAGE?.trim().equalsIgnoreCase("yes")) {
+		   				if ("yes".equalsIgnoreCase(config.EXECUTE_SONAR_QG_STAGE?.trim())) {
 				   			echo "Running... SONARQUBE QUALITY GATE"
 					   		sonarqubeQG([TIMEOUT_MINUTES: config.TIMEOUT_MINUTES])
 					   	} else { echo "Skipping...STAGE - SONARQUBE QUALITY GATE" }
@@ -91,7 +91,7 @@ def call(Map config = [:]) {
 		    stage("BUILD DOCKER IMAGE") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_DOCKER_IMAGE_BUILD_STAGE?.trim().equalsIgnoreCase("yes")) {
+		   				if ("yes".equalsIgnoreCase(config.EXECUTE_DOCKER_IMAGE_BUILD_STAGE?.trim())) {
 		   					echo "Running...BUILD DOCKER IMAGE"
 		   					env.DOCKER_IMAGE = dockerImageBuild([
 		   						PROJECT_NAME: 			 config.PROJECT_NAME,
@@ -108,7 +108,7 @@ def call(Map config = [:]) {
 		    stage("DOCKER IMAGE SCAN - TRIVY") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_TRIVY_IMAGE_STAGE?.trim().equalsIgnoreCase("yes")) {
+		   				if ("yes".equalsIgnoreCase(config.EXECUTE_TRIVY_IMAGE_STAGE?.trim())) {
 		   					echo ("Running...DOCKER IMAGE SCAN - TRIVY")
 		   					trivyScan([
 					   			MODE:                    "image",
@@ -127,7 +127,7 @@ def call(Map config = [:]) {
 		    stage("NEXUS ARTIFACT UPLOAD") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_NEXUS_STAGE?.trim().equalsIgnoreCase("yes")) {
+		   				if ("yes".equalsIgnoreCase(config.EXECUTE_NEXUS_STAGE?.trim())) {
 		   					if (configMap.NEXUS_CREDENTIALS_ID?.trim()) {
     							echo "Nexus credentials ID is provided: ${config.NEXUS_CREDENTIALS_ID}"
 		   						withCredentials([usernamePassword(
@@ -160,7 +160,7 @@ def call(Map config = [:]) {
 		    stage("DOCKER IMAGE UPLOAD - DOCKER HUB") {
 		   		steps {
 		   			script {
-                        if (config.EXECUTE_DOCKER_HUB_PUSH_STAGE?.trim().equalsIgnoreCase("yes")) {
+                        if ("yes".equalsIgnoreCase(config.EXECUTE_DOCKER_HUB_PUSH_STAGE?.trim())) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - DOCKER HUB"
 		   					dockerPush([
 		   						DOCKER_IMAGE:              env.DOCKER_IMAGE,
@@ -175,7 +175,7 @@ def call(Map config = [:]) {
 		    stage("DOCKER IMAGE UPLOAD - ECR") {
 		   		steps {
 		   			script {
-		   				if (config.EXECUTE_ECR_PUSH_STAGE?.trim().equalsIgnoreCase("yes")) {
+		   				if ("yes".equalsIgnoreCase(config.EXECUTE_ECR_PUSH_STAGE?.trim())) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - ECR"
 		   					ecrPush([
 		   						DOCKER_IMAGE:       env.DOCKER_IMAGE,
