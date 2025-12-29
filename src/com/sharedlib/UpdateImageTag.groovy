@@ -123,7 +123,8 @@ class UpdateImageTag implements Serializable {
         ]) {
             // def safeGitUrl = "https://${script.env.GIT_USER_SAFE}:${script.env.GIT_TOKEN_SAFE}@${vcsHost}/${script.env.GIT_USER_SAFE}/${config.GIT_REPO_NAME}.git"
             // replace '$' with '\$' to tell groovy not to interpret variable but to pass it as is to shell to interpret by shell(shell sees '$GIT_USER_SAFE', groovy sees 'env.${GIT_USER_SAFE}')
-            def safeGitUrl = "https://\$GIT_USER_SAFE:\$GIT_TOKEN_SAFE@${vcsHost}/\$GIT_USER_SAFE/\${config.GIT_REPO_NAME}.git"
+            def safeGitUrl = "https://\$GIT_USER_SAFE:\$GIT_TOKEN_SAFE@${vcsHost}/\$GIT_USER_SAFE/${config.GIT_REPO_NAME}.git"
+            // Passed to shell --> "https://$GIT_USER_SAFE:$GIT_TOKEN_SAFE@github.com/$GIT_USER_SAFE/reponame.git"
             return script.sh(
                 script: "git push ${safeGitUrl} HEAD:${config.GIT_BRANCH_NAME}",
                 returnStatus: true
