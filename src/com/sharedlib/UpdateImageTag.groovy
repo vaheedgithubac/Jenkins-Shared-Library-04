@@ -137,8 +137,10 @@ class UpdateImageTag implements Serializable {
             script.echo "✅ Image tag pushed successfully for files: '${config.FILES.join(', ')}' with latest tag: '${config.MY_GIT_LATEST_COMMIT_ID}'"
             script.echo """
             📄 Pushed Tag Details:
+            ***************************************************
                 Files : '${config.FILES.join(', ')}'
                 Latest Tag: '${config.MY_GIT_LATEST_COMMIT_ID}'
+            ***************************************************
             """
         }
     }
