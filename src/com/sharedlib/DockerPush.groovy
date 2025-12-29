@@ -11,7 +11,7 @@ class DockerPush implements Serializable {
 		def required = ["DOCKER_IMAGE", "DOCKER_REGISTRY_URI", "DOCKER_HUB_CREDENTIALS_ID"]
 	    required.each { key ->
 	        if (!config[key] || config[key]?.toString().trim() == "") {
-	            error "❌ DOCKER BUILD: Missing required parameter '${key}'"
+	            script.error "❌ DOCKER BUILD: Missing required parameter '${key}'"
 	        }
 	    }
 
@@ -35,9 +35,8 @@ class DockerPush implements Serializable {
 	        // Login to Docker Hub
 	        script.sh """
 	            set +x
-	            echo "🔐 Logging into Docker Hub as '${DOCKER_USER}'"
-	            echo "\${DOCKER_PASS}" | docker login -u "\${DOCKER_USER}" --password-stdin
-	            # echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin 
+	            echo "🔐 Logging into Docker Hub as '\$DOCKER_USER'"
+	            echo \${DOCKER_PASS} | docker login -u \${DOCKER_USER} --password-stdin
 	            set -x
 	        """
             /*
