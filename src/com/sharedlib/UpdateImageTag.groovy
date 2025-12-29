@@ -56,7 +56,7 @@ class UpdateImageTag implements Serializable {
         ***************************************************
         📄 Given Details:
         ***************************************************
-            Files : '${filesToCommit}'
+            Files : '${filesToCommit.join(', ')}'
             Tag: '${config.MY_GIT_LATEST_COMMIT_ID}'
         ***************************************************
         """
