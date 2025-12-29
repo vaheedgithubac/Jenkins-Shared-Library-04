@@ -63,7 +63,7 @@ class UpdateImageTag implements Serializable {
         )
     }
 
-    // Git commit and push (unchanged from previous safe version)
+    // Check whether 'Files' are there to commit 
     private void gitCommitAndPush(Map config = [:]) {
         if (!config.FILES || config.FILES.isEmpty()) {
             script.echo "ℹ️ No files to commit. Skipping git commit & push."
@@ -73,9 +73,9 @@ class UpdateImageTag implements Serializable {
         def required = [
             "GIT_REPO_NAME",
             "GIT_BRANCH_NAME",
-            "GIT_DEPLOY_HTTPS_CREDS",
+            "MY_GIT_LATEST_COMMIT_ID",
             "VERSION_CONTROL_SYSTEM",
-            "MY_GIT_LATEST_COMMIT_ID"
+            "GIT_DEPLOY_HTTPS_CREDS"  
         ]
 
         required.each { key ->
