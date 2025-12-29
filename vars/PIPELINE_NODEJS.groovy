@@ -201,7 +201,8 @@ def call(Map config = [:]) {
 									VERSION_CONTROL_SYSTEM:  config.VERSION_CONTROL_SYSTEM,
 									GIT_DEPLOY_HTTPS_CREDS:  config.GIT_DEPLOY_HTTPS_CREDS, 
 									DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
-									HELM_VALUES_FILE:        config.HELM_VALUES_FILE
+									HELM_VALUES_FILE:        config.HELM_VALUES_FILE,
+									HELM_IMAGE_VERSION_KEY:  config.HELM_IMAGE_VERSION_KEY
                         		)
                     	} else { echo "Skipping... Stage - UPDATE_IMAGE_TAG_GITHUB (flag not set to 'yes')" }
 				    } 
