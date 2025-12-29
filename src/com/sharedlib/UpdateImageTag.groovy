@@ -52,6 +52,14 @@ class UpdateImageTag implements Serializable {
             filesToCommit << helmValuesFile
         }
 
+        script.echo """
+        ***************************************************
+        📄 Given Details:
+        ***************************************************
+            Files : '${config.FILES.join(', ')}'
+            Tag: '${config.MY_GIT_LATEST_COMMIT_ID}'
+        ***************************************************
+        """
         // Call git commit and push with credentials ID
         gitCommitAndPush(
             FILES: filesToCommit,
@@ -136,6 +144,7 @@ class UpdateImageTag implements Serializable {
         } else {
             script.echo "✅ Image tag pushed successfully for files: '${config.FILES.join(', ')}' with latest tag: '${config.MY_GIT_LATEST_COMMIT_ID}'"
             script.echo """
+            ***************************************************
             📄 Pushed Tag Details:
             ***************************************************
                 Files : '${config.FILES.join(', ')}'
