@@ -119,7 +119,7 @@ class UpdateImageTag implements Serializable {
         ]) {
             def safeGitUrl = "https://${GIT_USER_SAFE}:${GIT_TOKEN_SAFE}@${vcsHost}/${GIT_USER_SAFE}/${config.GIT_REPO_NAME}.git"
             return script.sh(
-                script: ['git', 'push', safeGitUrl, "HEAD:${config.GIT_BRANCH_NAME}"],
+                script: ['git', 'push', ${safeGitUrl}, "HEAD:${config.GIT_BRANCH_NAME}"],
                 returnStatus: true
             )
         }
@@ -127,7 +127,7 @@ class UpdateImageTag implements Serializable {
         if (pushStatus != 0) {
             script.echo "⚠️ Git push failed or nothing to push. Check credentials or remote branch."
         } else {
-            script.echo "✅ Image tag pushed successfully for files: ${config.FILES.join(', ')}"
+            script.echo "✅ Image tag pushed successfully for files: ${config.FILES.join(', ')} with latest tag: ${config.MY_GIT_LATEST_COMMIT_ID}"
         }
     }
 }
