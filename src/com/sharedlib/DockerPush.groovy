@@ -29,7 +29,7 @@ class DockerPush implements Serializable {
 	        // Tag the Docker image
 	        script.sh """
 	            echo "🔖 Tagging Docker Image"
-	            docker tag ${dockerImage} ${DOCKER_USER}/${dockerImage}
+	            docker tag ${dockerImage} \${DOCKER_USER}/${dockerImage}
 	        """
 
 	        // Login to Docker Hub
@@ -52,7 +52,7 @@ class DockerPush implements Serializable {
 	        // Push the image
 	        script.sh """
 	            echo "🚀 Pushing Docker Image to Docker Hub"
-	            docker push ${DOCKER_USER}/${dockerImage}
+	            docker push \${DOCKER_USER}/${dockerImage}
 	            echo "✔ Pushed Docker Image Successfully"
 	        """
 
