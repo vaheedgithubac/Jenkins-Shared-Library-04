@@ -41,12 +41,12 @@ class UpdateImageTag implements Serializable {
         }
 
         if (deploymentFile?.trim()) {
-                if (!config.DOCKERHUB_USERNAME?.toString()?.trim()) { script.error("❌ Please provide DOCKERHUB_USERNAME") }
-                else { def dockerhubUsername = config.DOCKERHUB_USERNAME
-                       def searchImage  = "${dockerhubUsername}/${imageName}"
-                       def replaceImage = "${dockerhubUsername}/${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
-                }
+            if (!config.DOCKERHUB_USERNAME?.toString()?.trim()) { script.error("❌ Please provide DOCKERHUB_USERNAME") }
             
+            def dockerhubUsername = config.DOCKERHUB_USERNAME
+            def searchImage  = "${dockerhubUsername}/${imageName}"
+            def replaceImage = "${dockerhubUsername}/${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
+                
             script.echo "Updating deployment file: ${deploymentFile}"
             script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
             filesToCommit << deploymentFile
