@@ -101,7 +101,7 @@ class UpdateImageTag implements Serializable {
 
         // Commit changes
         def commitStatus = script.sh(
-            script: "git commit -m \"Update image tag to '${config.MY_GIT_LATEST_COMMIT_ID}'\"",
+            script: 'git commit -m "Update image tag to '${config.MY_GIT_LATEST_COMMIT_ID}'"',
             returnStatus: true
         )
         
