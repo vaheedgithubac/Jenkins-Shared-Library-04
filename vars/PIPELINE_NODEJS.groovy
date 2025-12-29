@@ -194,7 +194,7 @@ def call(Map config = [:]) {
 				   script {
 					   if ("yes".equalsIgnoreCase(config.EXECUTE_UPDATE_IMAGE_TAG_GITHUB_STAGE?.trim())) {
 							    updateImageTag(
-                            		DOCKER_IMAGE:            config.DOCKER_IMAGE,   //env.DOCKER_IMAGE,
+                            		DOCKER_IMAGE:            env.DOCKER_IMAGE,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
 									GIT_BRANCH_NAME:         env.MY_GIT_BRANCH,
 									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
