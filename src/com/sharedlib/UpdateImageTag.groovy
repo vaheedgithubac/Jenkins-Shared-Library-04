@@ -92,23 +92,27 @@ class UpdateImageTag implements Serializable {
             default: script.error("❌ Unsupported VERSION_CONTROL_SYSTEM: ${config.VERSION_CONTROL_SYSTEM}")
         }
 
+        // Configure git user
+        script.sh "git config user.name 'jenkins'"
+        script.sh "git config user.email 'jenkins@company.com'"
+
         // Stage files
-        script.sh(["git", "config", "user.name", "jenkins"])
-        script.sh(["git", "config", "user.email", "jenkins@company.com"])
-        script.sh(["git", "add"] + config.FILES)
+        script.sh "git add ${config.FILES.join(' ')}"
 
         // Commit changes
         def commitStatus = script.sh(
-            script: ['git', 'commit', '-m', "Update image tag to '${config.MY_GIT_LATEST_COMMIT_ID}'"],
+            script: "git commit -m \"Update image tag to '${config.MY_GIT_LATEST_COMMIT_ID}'\"",
             returnStatus: true
         )
         
         if (commitStatus != 0) {
             script.echo "ℹ️ Nothing to commit."
+            return
         } else {
             script.echo "✅ Changes committed successfully."
         }
 
+        
         // Push safely using Jenkins credentials ID
         def pushStatus = script.withCredentials([
             script.usernamePassword(
@@ -117,15 +121,17 @@ class UpdateImageTag implements Serializable {
                 passwordVariable: 'GIT_TOKEN_SAFE'
             )
         ]) {
-            def safeGitUrl = "https://${GIT_USER_SAFE}:${GIT_TOKEN_SAFE}@${vcsHost}/${GIT_USER_SAFE}/${config.GIT_REPO_NAME}.git"
+            def safeGitUrl =
+                "https://${GIT_USER_SAFE}:${GIT_TOKEN_SAFE}@${vcsHost}/${GIT_USER_SAFE}/${config.GIT_REPO_NAME}.git"
+
             return script.sh(
-                script: ['git', 'push', ${safeGitUrl}, "HEAD:${config.GIT_BRANCH_NAME}"],
+                script: "git push ${safeGitUrl} HEAD:${config.GIT_BRANCH_NAME}",
                 returnStatus: true
             )
         }
 
         if (pushStatus != 0) {
-            script.echo "⚠️ Git push failed or nothing to push. Check credentials or remote branch."
+            script.echo "⚠️ Git push failed or nothing to push. Check credentials or remote branch permissions."
         } else {
             script.echo "✅ Image tag pushed successfully for files: ${config.FILES.join(', ')} with latest tag: ${config.MY_GIT_LATEST_COMMIT_ID}"
         }
