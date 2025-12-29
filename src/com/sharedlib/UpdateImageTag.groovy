@@ -121,7 +121,8 @@ class UpdateImageTag implements Serializable {
                 passwordVariable: 'GIT_TOKEN_SAFE'
             )
         ]) {
-            def safeGitUrl = "https://${script.env.GIT_USER_SAFE}:${script.env.GIT_TOKEN_SAFE}@${vcsHost}/${script.env.GIT_USER_SAFE}/${config.GIT_REPO_NAME}.git"
+            // def safeGitUrl = "https://${script.env.GIT_USER_SAFE}:${script.env.GIT_TOKEN_SAFE}@${vcsHost}/${script.env.GIT_USER_SAFE}/${config.GIT_REPO_NAME}.git"
+            def safeGitUrl = "https://$GIT_USER_SAFE@{vcsHost}/$GIT_USER_SAFE/${GIT_REPO_NAME}.git HEAD:${GIT_BRANCH_NAME}"
             return script.sh(
                 script: "git push ${safeGitUrl} HEAD:${config.GIT_BRANCH_NAME}",
                 returnStatus: true
