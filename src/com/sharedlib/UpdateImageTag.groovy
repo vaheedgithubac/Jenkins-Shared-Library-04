@@ -132,7 +132,7 @@ class UpdateImageTag implements Serializable {
         }
 
         if (pushStatus != 0) {
-            script.echo "⚠️ Git push failed or nothing to push. Check credentials or remote branch permissions."
+            script.error "⚠️ Git push failed or nothing to push. Check credentials or remote branch permissions."
         } else {
             script.echo "✅ Image tag pushed successfully for files: ${config.FILES.join(', ')} with latest tag: ${config.MY_GIT_LATEST_COMMIT_ID}"
         }
