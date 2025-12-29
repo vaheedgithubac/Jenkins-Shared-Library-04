@@ -37,7 +37,7 @@ class UpdateImageTag implements Serializable {
         def replaceImage = "${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
 
         if (!deploymentFile && !helmValuesFile) {
-            script.error("Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided")
+            script.error("Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided, Please provide any one of them")
         }
 
         if (deploymentFile?.trim()) {
@@ -47,9 +47,11 @@ class UpdateImageTag implements Serializable {
         }
 
         if (helmValuesFile?.trim()) {
-            script.echo "Updating helm values file: ${helmValuesFile}"
-            script.sh "sed -i 's|imageVersion:.*|imageVersion: ${config.MY_GIT_LATEST_COMMIT_ID}|' ${helmValuesFile}"
-            filesToCommit << helmValuesFile
+            if (config.HELM_IMAGE_VERSION_KEY?.trim()) {
+                script.echo "Updating helm values file: ${helmValuesFile}"
+                script.sh "sed -i 's|${config.HELM_IMAGE_VERSION_KEY}:.*|${config.HELM_IMAGE_VERSION_KEY}: ${config.MY_GIT_LATEST_COMMIT_ID}|g' ${helmValuesFile}"
+                filesToCommit << helmValuesFile
+            else { script.error "'HELM_IMAGE_VERSION_KEY' is required... }
         }
 
         script.echo """
