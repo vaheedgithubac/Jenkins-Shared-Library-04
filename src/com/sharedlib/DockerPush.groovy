@@ -28,7 +28,7 @@ class DockerPush implements Serializable {
 	        passwordVariable: 'DOCKER_PASS'
 	    )]) {
 			
-            dockerTaggedImage = "${env.DOCKER_USER}/${dockerImage}"
+            dockerTaggedImage = "${script.env.DOCKER_USER}/${dockerImage}"
 			
 	        // Tag the Docker image
 	        script.sh """
