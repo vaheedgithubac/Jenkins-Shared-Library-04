@@ -169,7 +169,7 @@ def call(Map config = [:]) {
 		   			script {
                         if ("yes".equalsIgnoreCase(config.EXECUTE_DOCKER_HUB_PUSH_STAGE?.trim())) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - DOCKER HUB"
-		   					TAGGED_DOCKER_IMAGE = dockerPush([
+		   					env.TAGGED_DOCKER_IMAGE = dockerPush([
 		   						DOCKER_IMAGE:              env.DOCKER_IMAGE,
 		   						DOCKER_REGISTRY_URI:       config.DOCKER_REGISTRY_URI,
 		   						DOCKER_HUB_CREDENTIALS_ID: config.DOCKER_HUB_CREDENTIALS_ID
@@ -184,7 +184,7 @@ def call(Map config = [:]) {
 		   			script {
 		   				if ("yes".equalsIgnoreCase(config.EXECUTE_ECR_PUSH_STAGE?.trim())) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - ECR"
-		   					TAGGED_ECR_IMAGE = ecrPush([
+		   					env.TAGGED_ECR_IMAGE = ecrPush([
 		   						DOCKER_IMAGE:       env.DOCKER_IMAGE,
 		   						ECR_REGISTRY_URI:   config.ECR_REGISTRY_URI,
 								REGION:             config.REGION,
