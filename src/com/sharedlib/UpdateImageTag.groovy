@@ -41,7 +41,7 @@ class UpdateImageTag implements Serializable {
                 script.echo "Updating deployment file: ${deploymentFile}"
                 script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
                 filesToCommit << deploymentFile
-            }
+            } else { script.error "'TAGGED_DOCKER_IMAGE' is required..." }
         }
 
         if (helmValuesFile?.trim()) {
