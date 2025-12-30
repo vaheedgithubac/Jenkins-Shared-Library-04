@@ -12,7 +12,6 @@ class UpdateImageTag implements Serializable {
     def updateImageTag(Map config = [:]) {
 
         def required = [
-            "TAGGED_DOCKER_IMAGE",
             "GIT_REPO_NAME",
             "GIT_BRANCH_NAME",
             "MY_GIT_LATEST_COMMIT_ID",
@@ -26,27 +25,27 @@ class UpdateImageTag implements Serializable {
             }
         }
 
-        def deploymentFile = config.DEPLOYMENT_FILE
-        def helmValuesFile = config.HELM_VALUES_FILE
+        def deploymentFile = ''
+        def helmValuesFile = ''
         def filesToCommit = []
 
-        def fullDockerImage = config.TAGGED_DOCKER_IMAGE
-        def imageName = fullDockerImage.trim().split(':')[0]
+        if (deploymentFile?.trim()) { 
+            deploymentFile = config.DEPLOYMENT_FILE
+            if (config.TAGGED_DOCKER_IMAGE?.trim()) {
+                def fullDockerImage = config.TAGGED_DOCKER_IMAGE
+                def imageName = fullDockerImage.trim().split(':')[0]
 
-        def searchImage  = "${imageName}"
-        def replaceImage = "${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
-        
-        if (!deploymentFile && !helmValuesFile) {
-            script.error("Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided, Please provide any one of them")
-        }
-
-        if (deploymentFile?.trim()) {   
-            script.echo "Updating deployment file: ${deploymentFile}"
-            script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
-            filesToCommit << deploymentFile
+                def searchImage  = "${imageName}"
+                def replaceImage = "${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
+            
+                script.echo "Updating deployment file: ${deploymentFile}"
+                script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
+                filesToCommit << deploymentFile
+            }
         }
 
         if (helmValuesFile?.trim()) {
+            helmValuesFile = config.HELM_VALUES_FILE
             if (config.HELM_IMAGE_VERSION_KEY?.trim()) {
                 script.echo "Updating helm values file: ${helmValuesFile}"
                 script.sh "sed -i 's|${config.HELM_IMAGE_VERSION_KEY}:.*|${config.HELM_IMAGE_VERSION_KEY}: ${config.MY_GIT_LATEST_COMMIT_ID}|g' ${helmValuesFile}"
