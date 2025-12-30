@@ -174,6 +174,7 @@ def call(Map config = [:]) {
 		   						DOCKER_REGISTRY_URI:       config.DOCKER_REGISTRY_URI,
 		   						DOCKER_HUB_CREDENTIALS_ID: config.DOCKER_HUB_CREDENTIALS_ID
 		   					])
+							echo "TAGGED_DOCKER_IMAGE: ${env.TAGGED_DOCKER_IMAGE}
 		   				} else { echo "Skipping... STAGE - DOCKER IMAGE UPLOAD - DOCKER HUB" }
 		   			}
 		   		}
@@ -190,6 +191,7 @@ def call(Map config = [:]) {
 								REGION:             config.REGION,
 		   						AWS_CREDENTIALS_ID: config.AWS_CREDENTIALS_ID
 		   					])
+							echo "TAGGED_ECR_IMAGE: ${env.TAGGED_ECR_IMAGE}
 		   				} else { echo "Skipping... STAGE - DOCKER IMAGE UPLOAD - ECR" }
 		   			}
 		   		}
