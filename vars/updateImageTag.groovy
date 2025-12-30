@@ -22,13 +22,13 @@ def call(Map config = [:]) {
         
         if (!env.TAGGED_DOCKER_IMAGE && !env.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
         
-        if (config.TAGGED_DOCKER_IMAGE) {
+        if (env.TAGGED_DOCKER_IMAGE) {
             def dockerConfig = config.clone()
             dockerConfig.TAGGED_IMAGE = env.TAGGED_DOCKER_IMAGE
             results << updater.updateImageTag(dockerConfig)
         }
 
-        if (config.TAGGED_ECR_IMAGE) {
+        if (env.TAGGED_ECR_IMAGE) {
             def ecrConfig = config.clone()
             ecrConfig.TAGGED_IMAGE = env.TAGGED_ECR_IMAGE
             results << updater.updateImageTag(ecrConfig)
