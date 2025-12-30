@@ -25,33 +25,30 @@ class UpdateImageTag implements Serializable {
             }
         }
 
-        def deploymentFile = ''
-        def helmValuesFile = ''
+        def deploymentFile = config.DEPLOYMENT_FILE
+        def helmValuesFile = config.HELM_VALUES_FILE
         def filesToCommit = []
 
         if (deploymentFile?.trim()) { 
-            deploymentFile = config.DEPLOYMENT_FILE
-            
-            if (config.TAGGED_IMAGE?.trim()) {
-                def fullDockerImage = config.TAGGED_IMAGE
-                def imageName = fullDockerImage.trim().split(':')[0]
+            if (!config.TAGGED_IMAGE?.trim()) { script.error "'TAGGED_IMAGE' is required...(src/com/sharedlib)" }
 
-                def searchImage  = "${imageName}"
-                def replaceImage = "${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
+            def fullDockerImage = config.TAGGED_IMAGE
+            def imageName = fullDockerImage.trim().split(':')[0]
+
+            def searchImage  = "${imageName}"
+            def replaceImage = "${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
             
-                script.echo "Updating deployment file: ${deploymentFile}"
-                script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
-                filesToCommit << deploymentFile
-            } else { script.error "'TAGGED_IMAGE' is required...(src/com/sharedlib)" }
+            script.echo "Updating deployment file: ${deploymentFile}"
+            script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
+            filesToCommit << deploymentFile   
         }
 
         if (helmValuesFile?.trim()) {
-            helmValuesFile = config.HELM_VALUES_FILE
-            if (config.HELM_IMAGE_VERSION_KEY?.trim()) {
-                script.echo "Updating helm values file: ${helmValuesFile}"
-                script.sh "sed -i 's|${config.HELM_IMAGE_VERSION_KEY}:.*|${config.HELM_IMAGE_VERSION_KEY}: ${config.MY_GIT_LATEST_COMMIT_ID}|g' ${helmValuesFile}"
-                filesToCommit << helmValuesFile
-            } else { script.error "'HELM_IMAGE_VERSION_KEY' is required...(src/com/sharedlib)" }
+            if (config.HELM_IMAGE_VERSION_KEY?.trim()) { script.error "'HELM_IMAGE_VERSION_KEY' is required...(src/com/sharedlib)" }
+
+            script.echo "Updating helm values file: ${helmValuesFile}"
+            script.sh "sed -i 's|${config.HELM_IMAGE_VERSION_KEY}:.*|${config.HELM_IMAGE_VERSION_KEY}: ${config.MY_GIT_LATEST_COMMIT_ID}|g' ${helmValuesFile}"
+            filesToCommit << helmValuesFile 
         }
 
         script.echo """
