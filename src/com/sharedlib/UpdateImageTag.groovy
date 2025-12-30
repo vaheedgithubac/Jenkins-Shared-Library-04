@@ -21,7 +21,7 @@ class UpdateImageTag implements Serializable {
 
         required.each { key ->
             if (!config[key]?.toString()?.trim()) {
-                script.error("❌ UPDATE IMAGE TAG: Missing required parameter '${key}'")
+                script.error("❌ UPDATE IMAGE TAG: Missing required parameter '${key}' (src/com/sharedlib)")
             }
         }
 
@@ -41,7 +41,7 @@ class UpdateImageTag implements Serializable {
                 script.echo "Updating deployment file: ${deploymentFile}"
                 script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
                 filesToCommit << deploymentFile
-            } else { script.error "'TAGGED_DOCKER_IMAGE' is required..." }
+            } else { script.error "'TAGGED_DOCKER_IMAGE' is required...(src/com/sharedlib)" }
         }
 
         if (helmValuesFile?.trim()) {
@@ -50,7 +50,7 @@ class UpdateImageTag implements Serializable {
                 script.echo "Updating helm values file: ${helmValuesFile}"
                 script.sh "sed -i 's|${config.HELM_IMAGE_VERSION_KEY}:.*|${config.HELM_IMAGE_VERSION_KEY}: ${config.MY_GIT_LATEST_COMMIT_ID}|g' ${helmValuesFile}"
                 filesToCommit << helmValuesFile
-            } else { script.error "'HELM_IMAGE_VERSION_KEY' is required..." }
+            } else { script.error "'HELM_IMAGE_VERSION_KEY' is required...(src/com/sharedlib)" }
         }
 
         script.echo """
@@ -89,7 +89,7 @@ class UpdateImageTag implements Serializable {
 
         required.each { key ->
             if (!config[key]?.toString()?.trim()) {
-                script.error("❌ GIT COMMIT: Missing required parameter '${key}'")
+                script.error("❌ GIT COMMIT: Missing required parameter '${key}' (src/com/sharedlib)")
             }
         }
 
