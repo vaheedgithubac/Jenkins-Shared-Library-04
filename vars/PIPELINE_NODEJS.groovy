@@ -23,6 +23,8 @@ def call(Map config = [:]) {
 					script {
 						env.MY_GIT_LATEST_COMMIT_ID = ''
 						env.DOCKER_IMAGE = ''
+						env.TAGGED_DOCKER_IMAGE = ''
+						env.TAGGED_ECR_IMAGE = ''
 						env.MY_GIT_BRANCH = config.MY_GIT_BRANCH ?: env.BRANCH_NAME ?: "main"
 					}
 				}
@@ -163,7 +165,7 @@ def call(Map config = [:]) {
 		   			script {
                         if ("yes".equalsIgnoreCase(config.EXECUTE_DOCKER_HUB_PUSH_STAGE?.trim())) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - DOCKER HUB"
-		   					dockerPush([
+		   					TAGGED_DOCKER_IMAGE = dockerPush([
 		   						DOCKER_IMAGE:              env.DOCKER_IMAGE,
 		   						DOCKER_REGISTRY_URI:       config.DOCKER_REGISTRY_URI,
 		   						DOCKER_HUB_CREDENTIALS_ID: config.DOCKER_HUB_CREDENTIALS_ID
@@ -178,7 +180,7 @@ def call(Map config = [:]) {
 		   			script {
 		   				if ("yes".equalsIgnoreCase(config.EXECUTE_ECR_PUSH_STAGE?.trim())) {
 		   					echo "Running...DOCKER IMAGE UPLOAD - ECR"
-		   					ecrPush([
+		   					TAGGED_ECR_IMAGE = ecrPush([
 		   						DOCKER_IMAGE:       env.DOCKER_IMAGE,
 		   						ECR_REGISTRY_URI:   config.ECR_REGISTRY_URI,
 								REGION:             config.REGION,
@@ -194,7 +196,8 @@ def call(Map config = [:]) {
 				   script {
 					   if ("yes".equalsIgnoreCase(config.EXECUTE_UPDATE_IMAGE_TAG_GITHUB_STAGE?.trim())) {
 							    updateImageTag(
-                            		DOCKER_IMAGE:            env.DOCKER_IMAGE,
+                            		TAGGED_DOCKER_IMAGE:     env.TAGGED_DOCKER_IMAGE,
+									TAGGED_ECR_IMAGE:        env.TAGGED_ECR_IMAGE,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
 									GIT_BRANCH_NAME:         env.MY_GIT_BRANCH,
 									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
