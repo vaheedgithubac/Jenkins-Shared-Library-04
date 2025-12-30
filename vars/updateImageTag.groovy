@@ -18,8 +18,10 @@ def call(Map config = [:]) {
     }
 
     if (config.DEPLOYMENT_FILE) {
-        if (!config.TAGGED_DOCKER_IMAGE && !config.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
-
+        // if (!config.TAGGED_DOCKER_IMAGE && !config.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
+        
+        if (!env.TAGGED_DOCKER_IMAGE && !env.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
+        
         if (config.TAGGED_DOCKER_IMAGE) {
             def dockerConfig = config.clone()
             dockerConfig.TAGGED_IMAGE = env.TAGGED_DOCKER_IMAGE
