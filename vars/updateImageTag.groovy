@@ -30,7 +30,6 @@ def call(Map config = [:]) {
         }
     }
 
-
     if (fileExists(helmValuesFilePath)) { 
         echo "✅ Helm file:${config.HELM_VALUES_FILE} found at:${helmValuesFilePath}" 
 
@@ -39,6 +38,5 @@ def call(Map config = [:]) {
         def helmConfig = config.clone()
         results << updater.updateImageTag(helmConfig)
     }
-            
     return results
 }
