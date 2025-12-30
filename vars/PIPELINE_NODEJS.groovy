@@ -37,7 +37,11 @@ def call(Map config = [:]) {
 						// MY_GIT_LATEST_COMMIT_ID = getLatestCommitIdShort()
 						
 						if (config.EXECUTE_GITCHECKOUT_STAGE?.trim().equalsIgnoreCase("yes")) {
-							env.MY_GIT_LATEST_COMMIT_ID = gitCheckout([MY_GIT_URL: config.MY_GIT_URL, MY_GIT_REPO_TYPE: config.MY_GIT_REPO_TYPE, MY_GIT_BRANCH: env.MY_GIT_BRANCH])
+							env.MY_GIT_LATEST_COMMIT_ID = gitCheckout([
+									MY_GIT_URL:       config.MY_GIT_URL, 
+									MY_GIT_REPO_TYPE: config.MY_GIT_REPO_TYPE, 
+									MY_GIT_BRANCH:    env.MY_GIT_BRANCH
+							])
 	   						echo "MY_GIT_LATEST_COMMIT_ID: ${env.MY_GIT_LATEST_COMMIT_ID}"
 						}
 					}
