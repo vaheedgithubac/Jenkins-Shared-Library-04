@@ -19,13 +19,17 @@ class DockerPush implements Serializable {
     	def credentialsId     = config.DOCKER_HUB_CREDENTIALS_ID
     	def dockerRegistryUri = config.DOCKER_REGISTRY_URI ?: "docker.io"   // optional, default to Docker Hub
 
+		def dockerTaggedImage = ''
+
     	// Use withCredentials to inject Docker credentials securely
 	    script.withCredentials([script.usernamePassword(
 	        credentialsId: credentialsId,
 	        usernameVariable: 'DOCKER_USER',
 	        passwordVariable: 'DOCKER_PASS'
 	    )]) {
-
+			
+            dockerTaggedImage = "${env.DOCKER_USER}/${dockerImage}"
+			
 	        // Tag the Docker image
 	        script.sh """
 	            echo "🔖 Tagging Docker Image"
@@ -61,5 +65,7 @@ class DockerPush implements Serializable {
 	            echo "✔ Logged out from Docker Hub Successfully"
 	        """
 	    }
+
+		return dockerTaggedImage
 	}
 }
