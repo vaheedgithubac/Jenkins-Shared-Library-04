@@ -31,8 +31,9 @@ class UpdateImageTag implements Serializable {
 
         if (deploymentFile?.trim()) { 
             deploymentFile = config.DEPLOYMENT_FILE
-            if (config.TAGGED_DOCKER_IMAGE?.trim()) {
-                def fullDockerImage = config.TAGGED_DOCKER_IMAGE
+            
+            if (config.TAGGED_IMAGE?.trim()) {
+                def fullDockerImage = config.TAGGED_IMAGE
                 def imageName = fullDockerImage.trim().split(':')[0]
 
                 def searchImage  = "${imageName}"
@@ -41,7 +42,7 @@ class UpdateImageTag implements Serializable {
                 script.echo "Updating deployment file: ${deploymentFile}"
                 script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
                 filesToCommit << deploymentFile
-            } else { script.error "'TAGGED_DOCKER_IMAGE' is required...(src/com/sharedlib)" }
+            } else { script.error "'TAGGED_IMAGE' is required...(src/com/sharedlib)" }
         }
 
         if (helmValuesFile?.trim()) {
