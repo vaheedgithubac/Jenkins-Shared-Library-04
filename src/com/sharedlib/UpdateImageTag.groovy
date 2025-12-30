@@ -12,7 +12,7 @@ class UpdateImageTag implements Serializable {
     def updateImageTag(Map config = [:]) {
 
         def required = [
-            "DOCKER_IMAGE",
+            "TAGGED_DOCKER_IMAGE",
             "GIT_REPO_NAME",
             "GIT_BRANCH_NAME",
             "MY_GIT_LATEST_COMMIT_ID",
@@ -30,23 +30,17 @@ class UpdateImageTag implements Serializable {
         def helmValuesFile = config.HELM_VALUES_FILE
         def filesToCommit = []
 
-        def fullDockerImage = config.DOCKER_IMAGE
+        def fullDockerImage = config.TAGGED_DOCKER_IMAGE
         def imageName = fullDockerImage.trim().split(':')[0]
 
+        def searchImage  = "${imageName}"
+        def replaceImage = "${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
         
-        
-
         if (!deploymentFile && !helmValuesFile) {
             script.error("Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided, Please provide any one of them")
         }
 
-        if (deploymentFile?.trim()) {
-            if (!config.DOCKERHUB_USERNAME?.toString()?.trim()) { script.error("❌ Please provide DOCKERHUB_USERNAME") }
-            
-            def dockerhubUsername = config.DOCKERHUB_USERNAME
-            def searchImage  = "${dockerhubUsername}/${imageName}"
-            def replaceImage = "${dockerhubUsername}/${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
-                
+        if (deploymentFile?.trim()) {   
             script.echo "Updating deployment file: ${deploymentFile}"
             script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
             filesToCommit << deploymentFile
