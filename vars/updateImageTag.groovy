@@ -46,7 +46,7 @@ def call(Map config = [:]) {
                 dockerConfig.DEPLOYMENT_FILE  = config.DEPLOYMENT_FILE
 
                 echo "dockerConfig.TAGGED_IMAGE = ${dockerConfig.TAGGED_IMAGE}"
-                results << updater.updateImageTag(dockerConfig)
+                updater.updateImageTag(dockerConfig)
             }
 
             if (config.TAGGED_ECR_IMAGE) {
@@ -57,7 +57,7 @@ def call(Map config = [:]) {
                 ecrConfig.DEPLOYMENT_FILE         = config.DEPLOYMENT_FILE
 
                 echo "ecrConfig.TAGGED_IMAGE = ${ecrConfig.TAGGED_IMAGE}"
-                results << updater.updateImageTag(ecrConfig)
+                updater.updateImageTag(ecrConfig)
             }
 
         } else { error "Not found given Deployment file: ${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}"}
@@ -80,7 +80,7 @@ def call(Map config = [:]) {
             helmConfig.HELM_IMAGE_VERSION_KEY = config.HELM_IMAGE_VERSION_KEY
 
             echo "helmConfig.HELM_IMAGE_VERSION_KEY: ${helmConfig.HELM_IMAGE_VERSION_KEY}"
-            results << updater.updateImageTag(helmConfig)
+            updater.updateImageTag(helmConfig)
 
         } else { error "Not found given HELM values file: ${config.HELM_VALUES_FILE} at: ${helmValuesFilePath}" }
 
