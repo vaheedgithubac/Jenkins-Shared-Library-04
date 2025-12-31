@@ -6,14 +6,14 @@ def call(Map config = [:]) {
     def results = []
     def updater = new UpdateImageTag(this)
 
-    if (!config.DEPLOYMENT_FILE && !config.HELM_VALUES_FILE) { error("Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE provided...") }
+    if (!config.DEPLOYMENT_FILE && !config.HELM_VALUES_FILE) { error("Neither DEPLOYMENT_FILE nor HELM_VALUES_FILE was provided...") }
 
     def deploymentFilePath = "${env.WORKSPACE}/${config.DEPLOYMENT_FILE?.trim()}"   
     def helmValuesFilePath = "${env.WORKSPACE}/${config.HELM_VALUES_FILE?.trim()}"
 
     
     if (fileExists(deploymentFilePath)) { 
-        echo "✅ Deployment file:${config.DEPLOYMENT_FILE} found at:${deploymentFilePath}" 
+        echo "✅ Found Deployment file:${config.DEPLOYMENT_FILE} at:${deploymentFilePath}" 
 
         if (!config.TAGGED_DOCKER_IMAGE && !config.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
         
@@ -31,7 +31,7 @@ def call(Map config = [:]) {
     }
 
     if (fileExists(helmValuesFilePath)) { 
-        echo "✅ Helm file:${config.HELM_VALUES_FILE} found at:${helmValuesFilePath}" 
+        echo "✅ Found Helm file:${config.HELM_VALUES_FILE} at:${helmValuesFilePath}" 
 
         if (!config.HELM_IMAGE_VERSION_KEY) { error "HELM_IMAGE_VERSION_KEY was not provided..."}
 
