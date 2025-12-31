@@ -27,7 +27,7 @@ class UpdateImageTag implements Serializable {
 
         def deploymentFile = config.DEPLOYMENT_FILE
         def helmValuesFile = config.HELM_VALUES_FILE
-        def filesToCommit = []
+        def fileToCommit = ''
 
         if (deploymentFile?.trim()) { 
             script.echo "config.TAGGED_IMAGE: ${config.TAGGED_IMAGE}...(src/com/sharedlib)"
@@ -41,7 +41,7 @@ class UpdateImageTag implements Serializable {
             
             script.echo "Updating deployment file: ${deploymentFile}"
             script.sh "sed -i 's|image: ${searchImage}.*|image: ${replaceImage}|g' ${deploymentFile}"
-            filesToCommit << deploymentFile   
+            fileToCommit = deploymentFile   
         }
 
         if (helmValuesFile?.trim()) {
@@ -49,20 +49,20 @@ class UpdateImageTag implements Serializable {
 
             script.echo "Updating helm values file: ${helmValuesFile}"
             script.sh "sed -i 's|${config.HELM_IMAGE_VERSION_KEY}:.*|${config.HELM_IMAGE_VERSION_KEY}: ${config.MY_GIT_LATEST_COMMIT_ID}|g' ${helmValuesFile}"
-            filesToCommit << helmValuesFile 
+            fileToCommit << helmValuesFile 
         }
 
         script.echo """
         ***************************************************
         📄 Given Details:
         ***************************************************
-            Files : '${filesToCommit.join(', ')}'
+            Files : '${fileToCommit}'
             Tag: '${config.MY_GIT_LATEST_COMMIT_ID}'
         ***************************************************
         """
         // Call git commit and push with credentials ID
         gitCommitAndPush(
-            FILES: filesToCommit,
+            FILE: fileToCommit,
             GIT_REPO_NAME: config.GIT_REPO_NAME,
             GIT_BRANCH_NAME: config.GIT_BRANCH_NAME,
             MY_GIT_LATEST_COMMIT_ID: config.MY_GIT_LATEST_COMMIT_ID,
@@ -73,12 +73,13 @@ class UpdateImageTag implements Serializable {
 
     // Check whether 'Files' are there to commit 
     private void gitCommitAndPush(Map config = [:]) {
-        if (!config.FILES || config.FILES.isEmpty()) {
+        if (!config.FILE || config.FILE.isEmpty()) {
             script.echo "ℹ️ No files to commit. Skipping git commit & push."
             return
         }
 
         def required = [
+            "FILE",
             "GIT_REPO_NAME",
             "GIT_BRANCH_NAME",
             "MY_GIT_LATEST_COMMIT_ID",
@@ -105,7 +106,7 @@ class UpdateImageTag implements Serializable {
         script.sh "git config user.email 'jenkins@company.com'"
 
         // Stage files
-        script.sh "git add ${config.FILES.join(' ')}"
+        script.sh "git add ${config.FILE}"
 
         // Commit changes
         def commitStatus = script.sh(
@@ -117,7 +118,7 @@ class UpdateImageTag implements Serializable {
             script.echo "ℹ️ Nothing to commit."
             return
         } else {
-            script.echo "✅ Changes committed successfully."
+            script.echo "✅ Changes committed successfully to local repo."
         }
 
         
@@ -142,12 +143,12 @@ class UpdateImageTag implements Serializable {
         if (pushStatus != 0) {
             script.error "⚠️ Git push failed or nothing to push. Check credentials or remote branch permissions."
         } else {
-            script.echo "✅ Image tag pushed successfully for files: '${config.FILES.join(', ')}' with latest tag: '${config.MY_GIT_LATEST_COMMIT_ID}'"
+            script.echo "✅ Image tag pushed successfully for file: '${config.FILE}' with latest tag: '${config.MY_GIT_LATEST_COMMIT_ID}'"
             script.echo """
             ***************************************************
             📄 Pushed Tag Details:
             ***************************************************
-                Files : '${config.FILES.join(', ')}'
+                File : '${config.FILE}'
                 Latest Tag: '${config.MY_GIT_LATEST_COMMIT_ID}'
             ***************************************************
             """
