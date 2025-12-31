@@ -30,6 +30,7 @@ class UpdateImageTag implements Serializable {
         def filesToCommit = []
 
         if (deploymentFile?.trim()) { 
+            script.echo "config.TAGGED_IMAGE: ${config.TAGGED_IMAGE}...(src/com/sharedlib)"
             if (!config.TAGGED_IMAGE?.trim()) { script.error "'TAGGED_IMAGE' is required...(src/com/sharedlib)" }
 
             def fullDockerImage = config.TAGGED_IMAGE
