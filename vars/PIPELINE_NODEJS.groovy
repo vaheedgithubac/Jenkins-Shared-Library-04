@@ -197,23 +197,56 @@ def call(Map config = [:]) {
 		   		}
 		    }
 
-		   stage("UPDATE_IMAGE_TAG_GITHUB") {
+		   stage("UPDATE_IMAGE_TAG_GITHUB_DEPLOY_DOCKER") {
 			   steps {
 				   script {
-					   if ("yes".equalsIgnoreCase(config.EXECUTE_UPDATE_IMAGE_TAG_GITHUB_STAGE?.trim())) {
+					   if ("yes".equalsIgnoreCase(config.UPDATE_IMAGE_TAG_GITHUB_DEPLOY_DOCKER?.trim())) {
 							    updateImageTag(
 									TAGGED_DOCKER_IMAGE:     env.TAGGED_DOCKER_IMAGE,
-									TAGGED_ECR_IMAGE:        env.TAGGED_ECR_IMAGE,
+									DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
 									GIT_BRANCH_NAME:         env.MY_GIT_BRANCH,
 									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
 									VERSION_CONTROL_SYSTEM:  config.VERSION_CONTROL_SYSTEM,
-									GIT_DEPLOY_HTTPS_CREDS:  config.GIT_DEPLOY_HTTPS_CREDS, 
-									DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
-									HELM_VALUES_FILE:        config.HELM_VALUES_FILE,
-									HELM_IMAGE_VERSION_KEY:  config.HELM_IMAGE_VERSION_KEY
+									GIT_DEPLOY_HTTPS_CREDS:  config.GIT_DEPLOY_HTTPS_CREDS
                         		)
-                    	} else { echo "Skipping... Stage - UPDATE_IMAGE_TAG_GITHUB (flag not set to 'yes')" }
+                    	} else { echo "Skipping... Stage - UPDATE_IMAGE_TAG_GITHUB_DEPLOY_DOCKER (flag not set to 'yes')" }
+				    } 
+				}
+		   }
+
+		   stage("UPDATE_IMAGE_TAG_GITHUB_DEPLOY_ECR") {
+			   steps {
+				   script {
+					   if ("yes".equalsIgnoreCase(config.UPDATE_IMAGE_TAG_GITHUB_DEPLOY_ECR?.trim())) {
+							    updateImageTag(
+									TAGGED_ECR_IMAGE:        env.TAGGED_ECR_IMAGE,
+									DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
+									GIT_REPO_NAME:           config.GIT_REPO_NAME,
+									GIT_BRANCH_NAME:         env.MY_GIT_BRANCH,
+									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
+									VERSION_CONTROL_SYSTEM:  config.VERSION_CONTROL_SYSTEM,
+									GIT_DEPLOY_HTTPS_CREDS:  config.GIT_DEPLOY_HTTPS_CREDS
+                        		)
+                    	} else { echo "Skipping... Stage - UPDATE_IMAGE_TAG_GITHUB_DEPLOY_ECR (flag not set to 'yes')" }
+				    } 
+				}
+		   }
+
+		   stage("UPDATE_IMAGE_TAG_GITHUB_DEPLOY_HELM") {
+			   steps {
+				   script {
+					   if ("yes".equalsIgnoreCase(config.UPDATE_IMAGE_TAG_GITHUB_DEPLOY_HELM?.trim())) {
+							    updateImageTag(
+									HELM_VALUES_FILE:        config.HELM_VALUES_FILE,
+									HELM_IMAGE_VERSION_KEY:  config.HELM_IMAGE_VERSION_KEY,
+									GIT_REPO_NAME:           config.GIT_REPO_NAME,
+									GIT_BRANCH_NAME:         env.MY_GIT_BRANCH,
+									MY_GIT_LATEST_COMMIT_ID: env.MY_GIT_LATEST_COMMIT_ID,
+									VERSION_CONTROL_SYSTEM:  config.VERSION_CONTROL_SYSTEM,
+									GIT_DEPLOY_HTTPS_CREDS:  config.GIT_DEPLOY_HTTPS_CREDS	
+                        		)
+                    	} else { echo "Skipping... Stage - UPDATE_IMAGE_TAG_GITHUB_DEPLOY_HELM (flag not set to 'yes')" }
 				    } 
 				}
 		   }
