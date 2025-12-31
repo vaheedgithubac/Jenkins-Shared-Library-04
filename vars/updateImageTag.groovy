@@ -20,12 +20,14 @@ def call(Map config = [:]) {
         if (config.TAGGED_DOCKER_IMAGE) {
             def dockerConfig = config.clone()
             dockerConfig.TAGGED_IMAGE = config.TAGGED_DOCKER_IMAGE
+            echo "dockerConfig.TAGGED_IMAGE = ${dockerConfig.TAGGED_IMAGE}"
             results << updater.updateImageTag(dockerConfig)
         }
 
         if (config.TAGGED_ECR_IMAGE) {
             def ecrConfig = config.clone()
-            ecrConfig.TAGGED_IMAGE = config.TAGGED_ECR_IMAGE
+            ecrConfig.TAGGED_ECR_IMAGE = config.TAGGED_ECR_IMAGE
+            echo "ecrConfig.TAGGED_IMAGE = ${ecrConfig.TAGGED_ECR_IMAGE}"
             results << updater.updateImageTag(ecrConfig)
         }
     }
