@@ -11,6 +11,12 @@ def call(Map config = [:]) {
         "GIT_DEPLOY_HTTPS_CREDS"
     ]
 
+    required.each { key ->
+            if (!config[key]?.toString()?.trim()) {
+                script.error("❌ UPDATE IMAGE TAG: Missing required parameter '${key}' (src/com/sharedlib)")
+            }
+    }
+
     def updater = new UpdateImageTag(this)
 
     def deploymentFilePath = "${env.WORKSPACE}/${config.DEPLOYMENT_FILE?.trim()}"   
