@@ -21,10 +21,10 @@ def call(Map config = [:]) {
 		    stage("Setting My Own ENV Vars") {
 				steps {
 					script {
-						env.MY_GIT_LATEST_COMMIT_ID = ''
 						env.DOCKER_IMAGE = ''
 						env.TAGGED_DOCKER_IMAGE = ''
 						env.TAGGED_ECR_IMAGE = ''
+						env.MY_GIT_LATEST_COMMIT_ID = ''
 						env.MY_GIT_BRANCH = config.MY_GIT_BRANCH ?: env.BRANCH_NAME ?: "main"
 					}
 				}
