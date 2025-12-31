@@ -27,9 +27,9 @@ def call(Map config = [:]) {
 
     
     if (config.DEPLOYMENT_FILE) {
-
+        
         if (fileExists(deploymentFilePath)) {
-
+            
             echo "✅ Found given Deployment file:${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}" 
 
             if (!config.TAGGED_DOCKER_IMAGE && !config.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
