@@ -12,9 +12,9 @@ def call(Map config = [:]) {
     ]
 
     required.each { key ->
-            if (!config[key]?.toString()?.trim()) {
-                script.error("❌ UPDATE IMAGE TAG: Missing required parameter '${key}' (src/com/sharedlib)")
-            }
+        if (!config[key]?.toString()?.trim()) {
+            script.error("❌ UPDATE IMAGE TAG: Missing required parameter '${key}' (src/com/sharedlib)")
+        }
     }
 
     def updater = new UpdateImageTag(this)
