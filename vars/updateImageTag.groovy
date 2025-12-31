@@ -11,12 +11,10 @@ def call(Map config = [:]) {
         "GIT_DEPLOY_HTTPS_CREDS"
     ]
 
-    
     def updater = new UpdateImageTag(this)
 
     def deploymentFilePath = "${env.WORKSPACE}/${config.DEPLOYMENT_FILE?.trim()}"   
-    def helmValuesFilePath = "${env.WORKSPACE}/${config.HELM_VALUES_FILE?.trim()}"
-
+    
     def customConfig = [:]
 
     customConfig.GIT_REPO_NAME           = config.GIT_REPO_NAME
@@ -61,7 +59,7 @@ def call(Map config = [:]) {
     } else { error "No Deployment file provided" }
 
 
-
+    def helmValuesFilePath = "${env.WORKSPACE}/${config.HELM_VALUES_FILE?.trim()}"
     if (config.HELM_VALUES_FILE) {
 
         if (fileExists(helmValuesFilePath)) {
