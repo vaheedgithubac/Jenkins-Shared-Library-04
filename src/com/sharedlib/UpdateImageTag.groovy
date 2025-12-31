@@ -44,7 +44,7 @@ class UpdateImageTag implements Serializable {
         }
 
         if (helmValuesFile?.trim()) {
-            if (config.HELM_IMAGE_VERSION_KEY?.trim()) { script.error "'HELM_IMAGE_VERSION_KEY' is required...(src/com/sharedlib)" }
+            if (!config.HELM_IMAGE_VERSION_KEY?.trim()) { script.error "'HELM_IMAGE_VERSION_KEY' is required...(src/com/sharedlib)" }
 
             script.echo "Updating helm values file: ${helmValuesFile}"
             script.sh "sed -i 's|${config.HELM_IMAGE_VERSION_KEY}:.*|${config.HELM_IMAGE_VERSION_KEY}: ${config.MY_GIT_LATEST_COMMIT_ID}|g' ${helmValuesFile}"
