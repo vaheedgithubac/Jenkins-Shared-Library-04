@@ -18,23 +18,17 @@ def call(Map config = [:]) {
     }
 
     def updater = new UpdateImageTag(this)
-
     def helmValuesFilePath = "${env.WORKSPACE}/${config.HELM_VALUES_FILE?.trim()}"   
     
     if (config.HELM_VALUES_FILE) {
-
         if (fileExists(helmValuesFilePath)) {
-
             echo "✅ Found Helm file:${config.HELM_VALUES_FILE} at: ${helmValuesFilePath}" 
 
             if (!config.HELM_IMAGE_VERSION_KEY) { error "HELM_IMAGE_VERSION_KEY was not provided..."}
 
             echo "helmConfig.HELM_IMAGE_VERSION_KEY: ${helmConfig.HELM_IMAGE_VERSION_KEY}"
-            updater.updateImageTag(helmConfig)
+            updater.updateImageTag(config)
 
         } else { error "Not found given HELM values file: ${config.HELM_VALUES_FILE} at: ${helmValuesFilePath}" }
-
-    } else { error "No HELM values file provided (vars/)..." }
-
-    
+    } else { error "No HELM values file provided (vars/)..." }  
 }
