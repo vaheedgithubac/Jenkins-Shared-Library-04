@@ -33,8 +33,13 @@ class UpdateImageTag implements Serializable {
             script.echo "config.TAGGED_IMAGE: ${config.TAGGED_IMAGE}...(src/com/sharedlib)"
             if (!config.TAGGED_IMAGE?.trim()) { script.error "'TAGGED_IMAGE' is required...(src/com/sharedlib)" }
 
-            def fullDockerImage = config.TAGGED_IMAGE
-            def imageName = fullDockerImage.trim().split(':')[0]
+            def fullDockerImage = config.TAGGED_IMAGE.trim()
+            def imageName
+            
+            if (fullDockerImage.contains(':')) { imageName = fullDockerImage.substring(0, fullDockerImage.lastIndexOf(':')) }
+            else { imageName = fullDockerImage  // implicit latest (e.g. "nginx") }
+
+            // def imageName = fullDockerImage.trim().split(':')[0]
 
             def searchImage  = "${imageName}"
             def replaceImage = "${imageName}:${config.MY_GIT_LATEST_COMMIT_ID}"
