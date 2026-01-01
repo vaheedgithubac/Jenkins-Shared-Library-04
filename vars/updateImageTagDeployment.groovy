@@ -25,20 +25,10 @@ def call(Map config = [:]) {
    
     if (fileExists(deploymentFilePath)) {
         echo "✅ Found given Deployment file:${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}" 
-
-            // if (!config.TAGGED_DOCKER_IMAGE && !config.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
-            
-
-        if (config.TAGGED_DOCKER_IMAGE) {
-            echo "TAGGED_IMAGE = ${config.TAGGED_DOCKER_IMAGE}"
+      
+            echo "TAGGED_IMAGE = ${config.TAGGED_IMAGE}"
             updater.updateImageTag(config)
-        }
-
-        if (config.TAGGED_ECR_IMAGE) {
-            echo "TAGGED_IMAGE = ${config.TAGGED_ECR_IMAGE}"
-            updater.updateImageTag(config)
-        }
-
+        
     } else { error "Not found given Deployment file: ${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}"}
     
 }
