@@ -25,7 +25,7 @@ def call(Map config = [:]) {
     if (fileExists(helmValuesFilePath)) {
         echo "✅ Found Helm file:${config.HELM_VALUES_FILE} at: ${helmValuesFilePath}" 
 
-        echo "HELM_IMAGE_VERSION_KEY: ${config.HELM_IMAGE_VERSION_KEY}"
+        echo "HELM_IMAGE_VERSION_KEY: '${config.HELM_IMAGE_VERSION_KEY}'...(vars/)"
         updater.updateImageTag(config)
 
     } else { error "Not found given HELM values file: ${config.HELM_VALUES_FILE} at: ${helmValuesFilePath}" }   
