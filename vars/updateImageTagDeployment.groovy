@@ -28,12 +28,12 @@ def call(Map config = [:]) {
 
             if (config.TAGGED_DOCKER_IMAGE) {
                 echo "TAGGED_IMAGE = ${config.TAGGED_IMAGE}"
-                updater.updateImageTag(dockerConfig)
+                updater.updateImageTag(config)
             }
 
             if (config.TAGGED_ECR_IMAGE) {
                 echo "TAGGED_IMAGE = ${config.TAGGED_IMAGE}"
-                updater.updateImageTag(ecrConfig)
+                updater.updateImageTag(config)
             }
 
         } else { error "Not found given Deployment file: ${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}"}
