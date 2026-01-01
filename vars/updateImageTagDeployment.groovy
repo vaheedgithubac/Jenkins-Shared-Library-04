@@ -37,6 +37,5 @@ def call(Map config = [:]) {
             }
 
         } else { error "Not found given Deployment file: ${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}"}
-
     } else { error "No Deployment file provided" }
 }
