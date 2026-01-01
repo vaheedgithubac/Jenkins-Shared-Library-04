@@ -201,7 +201,7 @@ def call(Map config = [:]) {
 			   steps {
 				   script {
 					   if ("yes".equalsIgnoreCase(config.UPDATE_IMAGE_TAG_GITHUB_DEPLOY_DOCKER?.trim())) {
-							    updateImageTag(
+							    updateImageTagDeployment(
 									TAGGED_DOCKER_IMAGE:     env.TAGGED_DOCKER_IMAGE,
 									DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
@@ -219,7 +219,7 @@ def call(Map config = [:]) {
 			   steps {
 				   script {
 					   if ("yes".equalsIgnoreCase(config.UPDATE_IMAGE_TAG_GITHUB_DEPLOY_ECR?.trim())) {
-							    updateImageTag(
+							    updateImageTagDeployment(
 									TAGGED_ECR_IMAGE:        env.TAGGED_ECR_IMAGE,
 									DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
@@ -237,7 +237,7 @@ def call(Map config = [:]) {
 			   steps {
 				   script {
 					   if ("yes".equalsIgnoreCase(config.UPDATE_IMAGE_TAG_GITHUB_DEPLOY_HELM?.trim())) {
-							    updateImageTag(
+							    updateImageTagHelm(
 									HELM_VALUES_FILE:        config.HELM_VALUES_FILE,
 									HELM_IMAGE_VERSION_KEY:  config.HELM_IMAGE_VERSION_KEY,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
