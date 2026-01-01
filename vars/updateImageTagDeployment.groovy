@@ -13,12 +13,11 @@ def call(Map config = [:]) {
 
     required.each { key ->
         if (!config[key]?.toString()?.trim()) {
-            script.error("❌ UPDATE IMAGE TAG: Missing required parameter '${key}' (src/com/sharedlib)")
+            script.error("❌ UPDATE IMAGE TAG DEPLOYMENT: Missing required parameter '${key}' (src/com/sharedlib)")
         }
     }
 
     def updater = new UpdateImageTag(this)
-
     def deploymentFilePath = "${env.WORKSPACE}/${config.DEPLOYMENT_FILE?.trim()}"   
     
     if (config.DEPLOYMENT_FILE) {
@@ -30,12 +29,12 @@ def call(Map config = [:]) {
             if (!config.TAGGED_DOCKER_IMAGE && !config.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
 
             if (config.TAGGED_DOCKER_IMAGE) {
-                echo "dockerConfig.TAGGED_IMAGE = ${dockerConfig.TAGGED_IMAGE}"
+                echo "TAGGED_IMAGE = ${config.TAGGED_IMAGE}"
                 updater.updateImageTag(dockerConfig)
             }
 
             if (config.TAGGED_ECR_IMAGE) {
-                echo "ecrConfig.TAGGED_IMAGE = ${ecrConfig.TAGGED_IMAGE}"
+                echo "TAGGED_IMAGE = ${config.TAGGED_IMAGE}"
                 updater.updateImageTag(ecrConfig)
             }
 
