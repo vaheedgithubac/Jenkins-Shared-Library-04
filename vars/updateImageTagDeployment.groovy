@@ -4,6 +4,8 @@ import com.sharedlib.UpdateImageTag
 def call(Map config = [:]) {
 
     def required = [
+        "DEPLOYMENT_FILE",
+        "TAGGED_IMAGE",
         "GIT_REPO_NAME",
         "GIT_BRANCH_NAME",
         "MY_GIT_LATEST_COMMIT_ID",
@@ -20,22 +22,23 @@ def call(Map config = [:]) {
     def updater = new UpdateImageTag(this)
     def deploymentFilePath = "${env.WORKSPACE}/${config.DEPLOYMENT_FILE?.trim()}"   
     
-    if (config.DEPLOYMENT_FILE) {
-        if (fileExists(deploymentFilePath)) {
-            echo "✅ Found given Deployment file:${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}" 
+   
+    if (fileExists(deploymentFilePath)) {
+        echo "✅ Found given Deployment file:${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}" 
 
-            if (!config.TAGGED_DOCKER_IMAGE && !config.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
+            // if (!config.TAGGED_DOCKER_IMAGE && !config.TAGGED_ECR_IMAGE) { error "Neither TAGGED_DOCKER_IMAGE nor TAGGED_ECR_IMAGE was provided..."}
+            
 
-            if (config.TAGGED_DOCKER_IMAGE) {
-                echo "TAGGED_IMAGE = ${config.TAGGED_DOCKER_IMAGE}"
-                updater.updateImageTag(config)
-            }
+        if (config.TAGGED_DOCKER_IMAGE) {
+            echo "TAGGED_IMAGE = ${config.TAGGED_DOCKER_IMAGE}"
+            updater.updateImageTag(config)
+        }
 
-            if (config.TAGGED_ECR_IMAGE) {
-                echo "TAGGED_IMAGE = ${config.TAGGED_ECR_IMAGE}"
-                updater.updateImageTag(config)
-            }
+        if (config.TAGGED_ECR_IMAGE) {
+            echo "TAGGED_IMAGE = ${config.TAGGED_ECR_IMAGE}"
+            updater.updateImageTag(config)
+        }
 
-        } else { error "Not found given Deployment file: ${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}"}
-    } else { error "No Deployment file provided" }
+    } else { error "Not found given Deployment file: ${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}"}
+    
 }
