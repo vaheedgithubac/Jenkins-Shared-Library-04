@@ -22,13 +22,12 @@ def call(Map config = [:]) {
     def updater = new UpdateImageTag(this)
     def deploymentFilePath = "${env.WORKSPACE}/${config.DEPLOYMENT_FILE?.trim()}"   
     
-   
     if (fileExists(deploymentFilePath)) {
         echo "✅ Found given Deployment file:${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}" 
-      
-            echo "TAGGED_IMAGE = ${config.TAGGED_IMAGE}"
-            updater.updateImageTag(config)
         
-    } else { error "Not found given Deployment file: ${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}"}
-    
+        echo "TAGGED_IMAGE = ${config.TAGGED_IMAGE}"
+        
+        updater.updateImageTag(config)    
+        
+    } else { error "Not found given Deployment file: ${config.DEPLOYMENT_FILE} at: ${deploymentFilePath}"}  
 }
