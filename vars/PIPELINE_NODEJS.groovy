@@ -202,7 +202,7 @@ def call(Map config = [:]) {
 				   script {
 					   if ("yes".equalsIgnoreCase(config.UPDATE_IMAGE_TAG_GITHUB_DEPLOY_DOCKER?.trim())) {
 							    updateImageTagDeployment(
-									TAGGED_DOCKER_IMAGE:     env.TAGGED_DOCKER_IMAGE,
+									TAGGED_IMAGE:            env.TAGGED_DOCKER_IMAGE,
 									DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
 									GIT_BRANCH_NAME:         env.MY_GIT_BRANCH,
@@ -220,7 +220,7 @@ def call(Map config = [:]) {
 				   script {
 					   if ("yes".equalsIgnoreCase(config.UPDATE_IMAGE_TAG_GITHUB_DEPLOY_ECR?.trim())) {
 							    updateImageTagDeployment(
-									TAGGED_ECR_IMAGE:        env.TAGGED_ECR_IMAGE,
+									TAGGED_IMAGE:            env.TAGGED_ECR_IMAGE,
 									DEPLOYMENT_FILE:         config.DEPLOYMENT_FILE,
 									GIT_REPO_NAME:           config.GIT_REPO_NAME,
 									GIT_BRANCH_NAME:         env.MY_GIT_BRANCH,
